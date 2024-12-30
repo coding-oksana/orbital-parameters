@@ -1,9 +1,7 @@
 import { atom } from 'jotai';
 
 export const initialState = {
-  orbitParams: [
-    '',
-  ],
+  orbitParams: [''],
   GeolocationCoordinates: [],
 };
 
