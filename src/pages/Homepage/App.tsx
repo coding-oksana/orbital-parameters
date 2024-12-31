@@ -1,6 +1,13 @@
+import Orbit2D from '../../components/Orbit2D';
+
 function App() {
   return (
-    <p className="p-10">Click on the Vite and React logos to learn more</p>
+    <div>
+      <h1 className="pt-5 text-xl font-bold text-center">
+        Satellite Orbit Visualizer
+      </h1>
+      <Orbit2D />
+    </div>
   );
 }
 
