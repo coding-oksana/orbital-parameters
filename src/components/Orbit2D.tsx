@@ -3,8 +3,8 @@ import * as d3 from 'd3';
 
 export default function Orbit2D() {
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const [semiMajorAxis, setSemiMajorAxis] = useState<number>(7000); // x-radius
-  const [semiMinorAxis, setSemiMinorAxis] = useState<number>(5000); // y-radius
+  const [semiMajorAxis, setSemiMajorAxis] = useState<number>(7000); // km
+  const [semiMinorAxis, setSemiMinorAxis] = useState<number>(5000); // km
 
   useEffect(() => {
     const width = 500;
@@ -12,8 +12,10 @@ export default function Orbit2D() {
     const centerX = width / 2;
     const centerY = height / 2;
 
-    // Scaling factor: pixels per kilometer
-    const scale = 0.02; // Adjust this to fit your visualization
+    // Calculate dynamic scaling factor
+    const maxAxis = Math.max(semiMajorAxis, semiMinorAxis);
+    const margin = 50; // Margin to ensure the orbit doesn't touch canvas edges
+    const scale = (width / 2 - margin) / maxAxis; // Scale to fit canvas
 
     const svg = d3
       .select(svgRef.current)
@@ -23,12 +25,12 @@ export default function Orbit2D() {
     // Clear the SVG before rendering
     svg.selectAll('*').remove();
 
-    // Draw the central body (e.g., Earth)
+    // Draw the central body (Earth)
     svg
       .append('circle')
       .attr('cx', centerX)
       .attr('cy', centerY)
-      .attr('r', 10) // Fixed size for Earth representation
+      .attr('r', 20) // Fixed size for Earth
       .attr('fill', 'blue');
 
     // Draw the orbit as an ellipse
@@ -36,8 +38,8 @@ export default function Orbit2D() {
       .append('ellipse')
       .attr('cx', centerX)
       .attr('cy', centerY)
-      .attr('rx', semiMajorAxis * scale) // Scale the semi-major axis
-      .attr('ry', semiMinorAxis * scale) // Scale the semi-minor axis
+      .attr('rx', semiMajorAxis * scale) // Scaled semi-major axis
+      .attr('ry', semiMinorAxis * scale) // Scaled semi-minor axis
       .attr('stroke', 'gray')
       .attr('fill', 'none');
 
@@ -52,14 +54,14 @@ export default function Orbit2D() {
       .attr('cy', satelliteY)
       .attr('r', 5)
       .attr('fill', 'red');
-  }, [semiMajorAxis, semiMinorAxis]); // Re-render when orbit parameters change
+  }, [semiMajorAxis, semiMinorAxis]);
 
   return (
     <div>
       <div>
         <div className="flex flex-col justify-start">
           <label>
-            Semi-Major Axis:
+            Semi-Major Axis (km):
             <input
               type="number"
               value={semiMajorAxis}
@@ -67,7 +69,7 @@ export default function Orbit2D() {
             />
           </label>
           <label>
-            Semi-Minor Axis:
+            Semi-Minor Axis (km):
             <input
               type="number"
               value={semiMinorAxis}
