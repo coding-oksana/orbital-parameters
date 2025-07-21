@@ -3,4 +3,5 @@ export interface OrbitParams {
   e: number;
   ω: number;
   v: number;
+  i: number;
 }

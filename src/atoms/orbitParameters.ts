@@ -6,6 +6,7 @@ export const initialState: OrbitParams = {
   e: 0, // eccentricity
   ω: 0, // argument of perigee (deg)
   v: 0, // true anomaly (deg)
+  i: 0, // inclination
 };
 
 const params = atom<OrbitParams>(initialState);
