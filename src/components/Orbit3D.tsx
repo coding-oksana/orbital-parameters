@@ -9,6 +9,7 @@ import {
   argPerigeeAtom,
   trueAnomalyAtom,
 } from '../atoms/orbitParameters';
+
 import {
   computeOrbitPositions,
   LatLonHeight,
@@ -17,77 +18,72 @@ import {
 
 export default function Orbit3D(): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const viewerRef = useRef<InstanceType<typeof Cesium.Viewer> | null>(null);
+  const viewerRef = useRef<Cesium.Viewer | null>(null);
 
-  const inclination = useAtomValue(inclinationAtom);
-  const eccentricity = useAtomValue(eccentricityAtom);
-  const semiMajorAxis = useAtomValue(semiMajorAxisAtom);
-  const raan = useAtomValue(raanAtom);
-  const argPerigee = useAtomValue(argPerigeeAtom);
-  const trueAnomaly = useAtomValue(trueAnomalyAtom);
+  const inclination = useAtomValue<number>(inclinationAtom);
+  const eccentricity = useAtomValue<number>(eccentricityAtom);
+  const semiMajorAxis = useAtomValue<number>(semiMajorAxisAtom);
+  const raan = useAtomValue<number>(raanAtom);
+  const argPerigee = useAtomValue<number>(argPerigeeAtom);
+  const trueAnomaly = useAtomValue<number>(trueAnomalyAtom);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    async function updateViewer() {
+      if (!containerRef.current) return;
 
-    // Initialize Cesium viewer once
-    if (!viewerRef.current) {
-      viewerRef.current = new Cesium.Viewer(containerRef.current, {
-        animation: false,
-        timeline: false,
-        shouldAnimate: true,
-      });
+      if (!viewerRef.current) {
+        viewerRef.current = new Cesium.Viewer(containerRef.current, {
+          animation: false,
+          timeline: false,
+          shouldAnimate: true,
+        });
+      }
+
+      const viewer = viewerRef.current;
+      viewer.entities.removeAll();
+
+      const orbitParams: OrbitParams = {
+        inclination,
+        eccentricity,
+        semiMajorAxis,
+        raan,
+        argPerigee,
+        trueAnomaly,
+      };
+
+      const positions: LatLonHeight[] = computeOrbitPositions(orbitParams);
+
+      if (positions.length > 0) {
+        const satPosition = Cesium.Cartesian3.fromDegrees(
+          positions[0].lon,
+          positions[0].lat,
+          positions[0].height
+        );
+
+        viewer.entities.add({
+          name: 'Satellite',
+          position: satPosition,
+          point: { pixelSize: 10, color: Cesium.Color.RED },
+        });
+
+        const polylinePositions = positions.map((p) =>
+          Cesium.Cartesian3.fromDegrees(p.lon, p.lat, p.height)
+        );
+
+        viewer.entities.add({
+          name: 'Orbit Path',
+          polyline: {
+            positions: polylinePositions,
+            width: 2,
+            material: Cesium.Color.YELLOW,
+          },
+        });
+
+        await viewer.zoomTo(viewer.entities);
+      }
     }
 
-    const viewer = viewerRef.current;
-
-    // Clear previous entities
-    viewer.entities.removeAll();
-
-    const orbitParams: OrbitParams = {
-      inclination,
-      eccentricity,
-      semiMajorAxis,
-      raan,
-      argPerigee,
-      trueAnomaly,
-    };
-
-    const positions: LatLonHeight[] = computeOrbitPositions(orbitParams);
-
-    if (positions.length > 0) {
-      // Satellite current position
-      const satPosition = Cesium.Cartesian3.fromDegrees(
-        positions[0].lon,
-        positions[0].lat,
-        positions[0].height
-      );
-
-      viewer.entities.add({
-        name: 'Satellite',
-        position: satPosition,
-        point: {
-          pixelSize: 10,
-          color: Cesium.Color.RED,
-        },
-      });
-
-      // Orbit path polyline
-      const polylinePositions = positions.map((p) =>
-        Cesium.Cartesian3.fromDegrees(p.lon, p.lat, p.height)
-      );
-
-      viewer.entities.add({
-        name: 'Orbit Path',
-        polyline: {
-          positions: polylinePositions,
-          width: 2,
-          material: Cesium.Color.YELLOW,
-        },
-      });
-
-      // Zoom camera to fit orbit
-      viewer.zoomTo(viewer.entities);
-    }
+    void updateViewer();
 
     return () => {
       if (viewerRef.current) {

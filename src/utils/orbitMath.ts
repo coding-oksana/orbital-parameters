@@ -41,7 +41,6 @@ export function computeOrbitPositions(params: OrbitParams): LatLonHeight[] {
     // Position in orbital plane (x along periapsis)
     const xOrb = r * Math.cos(trueAnomaly);
     const yOrb = r * Math.sin(trueAnomaly);
-    const zOrb = 0;
 
     // Rotate from orbital plane to ECI using 3-1-3 Euler angles (RAAN, incl, argPerigee)
     const cosRAAN = Math.cos(raanRad);
