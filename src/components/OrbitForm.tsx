@@ -8,6 +8,31 @@ import {
   trueAnomalyAtom,
 } from '../atoms/orbitParameters';
 
+type NumberInputProps = {
+  label: string;
+  value: number | null;
+  onChange: (value: number | null) => void;
+  step?: string;
+};
+
+function NumberInput({ label, value, onChange, step }: NumberInputProps) {
+  return (
+    <label className="flex flex-col space-y-1">
+      {label}
+      <input
+        type="number"
+        step={step}
+        value={value !== null ? value : ''}
+        onChange={(e) => {
+          const val = e.target.value;
+          onChange(val === '' ? null : Number(val));
+        }}
+        className="border rounded px-2 py-1"
+      />
+    </label>
+  );
+}
+
 export default function OrbitForm() {
   const [inclination, setInclination] = useAtom(inclinationAtom);
   const [eccentricity, setEccentricity] = useAtom(eccentricityAtom);
@@ -18,55 +43,37 @@ export default function OrbitForm() {
 
   return (
     <div className="p-4 bg-gray-100 rounded-xl space-y-2">
-      <label>
-        Inclination:
-        <input
-          type="number"
-          value={inclination}
-          onChange={(e) => setInclination(+e.target.value)}
-        />
-      </label>
-      <label>
-        Eccentricity:
-        <input
-          type="number"
-          step="0.01"
-          value={eccentricity}
-          onChange={(e) => setEccentricity(+e.target.value)}
-        />
-      </label>
-      <label>
-        Semi-major Axis (km):
-        <input
-          type="number"
-          value={sma}
-          onChange={(e) => setSma(+e.target.value)}
-        />
-      </label>
-      <label>
-        RAAN:
-        <input
-          type="number"
-          value={raan}
-          onChange={(e) => setRaan(+e.target.value)}
-        />
-      </label>
-      <label>
-        Argument of Perigee:
-        <input
-          type="number"
-          value={argPerigee}
-          onChange={(e) => setArgPerigee(+e.target.value)}
-        />
-      </label>
-      <label>
-        True Anomaly:
-        <input
-          type="number"
-          value={trueAnomaly}
-          onChange={(e) => setTrueAnomaly(+e.target.value)}
-        />
-      </label>
+      <NumberInput
+        label="Inclination"
+        value={inclination}
+        onChange={(val) => setInclination(val ?? 0)}
+      />
+      <NumberInput
+        label="Eccentricity"
+        value={eccentricity}
+        onChange={(val) => setEccentricity(val ?? 0)}
+        step="0.01"
+      />
+      <NumberInput
+        label="Semi-major Axis (km)"
+        value={sma}
+        onChange={(val) => setSma(val ?? 0)}
+      />
+      <NumberInput
+        label="RAAN"
+        value={raan}
+        onChange={(val) => setRaan(val ?? 0)}
+      />
+      <NumberInput
+        label="Argument of Perigee"
+        value={argPerigee}
+        onChange={(val) => setArgPerigee(val ?? 0)}
+      />
+      <NumberInput
+        label="True Anomaly"
+        value={trueAnomaly}
+        onChange={(val) => setTrueAnomaly(val ?? 0)}
+      />
     </div>
   );
 }

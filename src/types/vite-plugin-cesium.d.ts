@@ -1,4 +1,3 @@
-// src/types/vite-plugin-cesium.d.ts
 declare module 'vite-plugin-cesium' {
   import type { Plugin } from 'vite';
 

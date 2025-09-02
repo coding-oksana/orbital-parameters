@@ -20,12 +20,12 @@ export default function Orbit3D(): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const viewerRef = useRef<Cesium.Viewer | null>(null);
 
-  const inclination = useAtomValue<number>(inclinationAtom);
-  const eccentricity = useAtomValue<number>(eccentricityAtom);
-  const semiMajorAxis = useAtomValue<number>(semiMajorAxisAtom);
-  const raan = useAtomValue<number>(raanAtom);
-  const argPerigee = useAtomValue<number>(argPerigeeAtom);
-  const trueAnomaly = useAtomValue<number>(trueAnomalyAtom);
+  const inclination = useAtomValue(inclinationAtom);
+  const eccentricity = useAtomValue(eccentricityAtom);
+  const semiMajorAxis = useAtomValue(semiMajorAxisAtom);
+  const raan = useAtomValue(raanAtom);
+  const argPerigee = useAtomValue(argPerigeeAtom);
+  const trueAnomaly = useAtomValue(trueAnomalyAtom);
 
   useEffect(() => {
     async function updateViewer() {
