@@ -1,6 +1,6 @@
 import OrbitForm from '../../components/OrbitForm';
-import Orbit3D from '../../components/Orbit3D';
-
+// import Orbit3D from '../../components/Orbit3D';
+import Orbit2D from '../../components/Orbit2D';
 function App() {
   return (
     <div>
@@ -11,7 +11,8 @@ function App() {
         <OrbitForm />
       </div>
       <div className="flex-1">
-        <Orbit3D />
+        {/* <Orbit3D /> */}
+        <Orbit2D />
       </div>
     </div>
   );
