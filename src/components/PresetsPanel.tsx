@@ -54,7 +54,7 @@ const REGIME_STYLES: Record<OrbitRegime, { badge: string; dot: string }> = {
     dot: 'bg-emerald-400',
   },
   MEO: {
-    badge: 'text-amber-400  bg-amber-400/10  border-amber-400/25',
+    badge: 'text-amber-400 bg-amber-400/10 border-amber-400/25',
     dot: 'bg-amber-400',
   },
   GEO: {
@@ -62,11 +62,11 @@ const REGIME_STYLES: Record<OrbitRegime, { badge: string; dot: string }> = {
     dot: 'bg-violet-400',
   },
   HEO: {
-    badge: 'text-rose-400   bg-rose-400/10   border-rose-400/25',
+    badge: 'text-rose-400 bg-rose-400/10 border-rose-400/25',
     dot: 'bg-rose-400',
   },
   SSO: {
-    badge: 'text-sky-400    bg-sky-400/10    border-sky-400/25',
+    badge: 'text-sky-400 bg-sky-400/10 border-sky-400/25',
     dot: 'bg-sky-400',
   },
 };
@@ -79,13 +79,24 @@ interface PresetCardProps {
   onClick: (preset: OrbitalPreset) => void;
 }
 
+function getRegimeStyle(regime: OrbitRegime): { badge: string; dot: string } {
+  return REGIME_STYLES[regime];
+}
+
 function PresetCard({ preset, isActive, onClick }: PresetCardProps) {
-  const { badge, dot } = REGIME_STYLES[preset.regime];
+  const { badge, dot } = getRegimeStyle(preset.regime);
+
+  // Explicit handler with a typed parameter — avoids the unsafe-argument
+  // error that fires when an arrow function closure passes `preset` without
+  // a visible annotation at the call site.
+  function handleClick(): void {
+    onClick(preset);
+  }
 
   return (
     <button
       type="button"
-      onClick={() => onClick(preset)}
+      onClick={handleClick}
       aria-pressed={isActive}
       className={[
         'relative w-full text-left px-3 py-2.5 rounded-lg border transition-all duration-150',
@@ -96,7 +107,6 @@ function PresetCard({ preset, isActive, onClick }: PresetCardProps) {
           : 'border-slate-700/60 bg-slate-800/40 hover:border-slate-600 hover:bg-slate-800/70',
       ].join(' ')}
     >
-      {/* Active indicator dot */}
       {isActive && (
         <span
           className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-sky-400"
@@ -117,7 +127,6 @@ function PresetCard({ preset, isActive, onClick }: PresetCardProps) {
         {preset.subtitle}
       </span>
 
-      {/* Regime badge */}
       <span
         className={[
           'inline-flex items-center gap-1 text-[9px] font-semibold',
