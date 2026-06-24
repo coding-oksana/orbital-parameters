@@ -63,20 +63,20 @@ export function PresetCard({ preset, isActive, onClick }: PresetCardProps) {
 
       <span
         className={[
-          'block text-[16px] font-semibold leading-none mb-1',
+          'block text-[14px] font-semibold leading-none mb-1',
           isActive ? 'text-sky-600' : 'text-slate-700',
         ].join(' ')}
       >
         {preset.name}
       </span>
 
-      <span className="block text-[14px] text-slate-400 leading-tight mb-2">
+      <span className="block text-[12px] text-slate-400 leading-tight mb-2">
         {preset.subtitle}
       </span>
 
       <span
         className={[
-          'inline-flex items-center gap-1 text-[12px] font-semibold',
+          'inline-flex items-center gap-1 text-[10px] font-semibold',
           'tracking-widest px-1.5 py-0.5 rounded border',
           badge,
         ].join(' ')}
