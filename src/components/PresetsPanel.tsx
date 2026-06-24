@@ -7,14 +7,7 @@ export function PresetsPanel({
   onSelect,
 }: PresetsPanelProps) {
   return (
-    <section
-      aria-label="Orbit presets"
-      className="px-4 py-4 border-b border-slate-700/50"
-    >
-      <p className="text-[9px] font-semibold tracking-[0.12em] text-slate-600 uppercase mb-3">
-        Presets
-      </p>
-
+    <section aria-label="Orbit presets" className="px-4 py-4">
       <div className="grid grid-cols-2 gap-2">
         {presets.map((preset) => (
           <PresetCard

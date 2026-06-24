@@ -46,12 +46,12 @@ export function PresetCard({ preset, isActive, onClick }: PresetCardProps) {
       onClick={handleClick}
       aria-pressed={isActive}
       className={[
-        'relative w-full text-left px-3 py-2.5 rounded-lg border transition-all duration-150',
+        'relative cursor-pointer w-full text-left px-3 py-2.5 rounded-lg border transition-all duration-150',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400',
         'focus-visible:ring-offset-1 focus-visible:ring-offset-[#0d1726]',
         isActive
           ? 'border-sky-500/60 bg-sky-500/10 shadow-[inset_0_1px_0_rgb(56_189_248/0.12)]'
-          : 'border-slate-700/60 bg-slate-800/40 hover:border-slate-600 hover:bg-slate-800/70',
+          : 'border-slate-200/60 bg-white hover:border-blue-200 hover:bg-blue-50/60',
       ].join(' ')}
     >
       {isActive && (
@@ -63,20 +63,20 @@ export function PresetCard({ preset, isActive, onClick }: PresetCardProps) {
 
       <span
         className={[
-          'block text-[12px] font-semibold leading-none mb-1',
-          isActive ? 'text-sky-300' : 'text-slate-200',
+          'block text-[16px] font-semibold leading-none mb-1',
+          isActive ? 'text-sky-600' : 'text-slate-700',
         ].join(' ')}
       >
         {preset.name}
       </span>
 
-      <span className="block text-[10px] text-slate-500 leading-tight mb-2">
+      <span className="block text-[14px] text-slate-400 leading-tight mb-2">
         {preset.subtitle}
       </span>
 
       <span
         className={[
-          'inline-flex items-center gap-1 text-[9px] font-semibold',
+          'inline-flex items-center gap-1 text-[12px] font-semibold',
           'tracking-widest px-1.5 py-0.5 rounded border',
           badge,
         ].join(' ')}
