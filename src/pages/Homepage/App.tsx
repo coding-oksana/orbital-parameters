@@ -1,9 +1,8 @@
-'use client';
-
 import { useCallback, useState } from 'react';
 
-import { PresetsPanel, PRESETS } from '@components/PresetsPanel';
+import { PresetsPanel } from '@components/PresetsPanel';
 import type { OrbitalPreset } from '@typeProps/orbitParams';
+import { PRESETS } from '../../constants';
 
 function App() {
   const [activePresetId, setActivePresetId] = useState<string | null>('iss');
