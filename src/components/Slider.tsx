@@ -37,13 +37,11 @@ export function KeplerianSlider({
   decimals = 0,
   onChange,
 }: KeplerianSliderProps) {
-  // Local draft for the text input so the user can freely edit before committing
   const [draft, setDraft] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const displayValue = draft ?? String(round(value, decimals));
 
-  // Commit whatever is in the draft back to the controlled value
   const commit = useCallback(
     (raw: string) => {
       setDraft(null);
@@ -79,14 +77,13 @@ export function KeplerianSlider({
     }
   }
 
-  // Fraction 0–1 for the custom thumb-track fill
   const fraction = (value - min) / (max - min);
 
   return (
     <div className="group flex flex-col gap-1.5">
       {/* Label row */}
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-medium tracking-wide text-slate-400 uppercase select-none">
+        <span className="text-[11px] font-medium tracking-wide text-slate-500 uppercase select-none">
           {label}
         </span>
       </div>
@@ -96,13 +93,13 @@ export function KeplerianSlider({
         {/* Slider track wrapper */}
         <div className="relative flex-1 h-4 flex items-center">
           {/* Background track */}
-          <div className="absolute inset-x-0 h-[3px] rounded-full bg-slate-700/80" />
+          <div className="absolute inset-x-0 h-[3px] rounded-full bg-slate-200" />
           {/* Filled portion */}
           <div
-            className="absolute left-0 h-[3px] rounded-full bg-sky-500/70 transition-[width] duration-75"
+            className="absolute left-0 h-[3px] rounded-full bg-blue-400/70 transition-[width] duration-75"
             style={{ width: `${fraction * 100}%` }}
           />
-          {/* Native range input — transparent, sits on top */}
+          {/* Native range input */}
           <input
             type="range"
             min={min}
@@ -119,18 +116,18 @@ export function KeplerianSlider({
               [&::-webkit-slider-thumb]:rounded-full
               [&::-webkit-slider-thumb]:bg-white
               [&::-webkit-slider-thumb]:border
-              [&::-webkit-slider-thumb]:border-slate-300/30
-              [&::-webkit-slider-thumb]:shadow-[0_0_0_2px_rgb(14_165_233/0.35),0_1px_3px_rgba(0,0,0,0.5)]
+              [&::-webkit-slider-thumb]:border-slate-300
+              [&::-webkit-slider-thumb]:shadow-[0_0_0_2px_rgb(96_165_250/0.35),0_1px_3px_rgba(0,0,0,0.15)]
               [&::-webkit-slider-thumb]:transition-shadow
               [&::-webkit-slider-thumb]:duration-150
-              hover:[&::-webkit-slider-thumb]:shadow-[0_0_0_3px_rgb(14_165_233/0.5),0_1px_3px_rgba(0,0,0,0.5)]
-              focus:[&::-webkit-slider-thumb]:shadow-[0_0_0_3px_rgb(14_165_233/0.65),0_1px_3px_rgba(0,0,0,0.5)]
+              hover:[&::-webkit-slider-thumb]:shadow-[0_0_0_3px_rgb(96_165_250/0.5),0_1px_3px_rgba(0,0,0,0.15)]
+              focus:[&::-webkit-slider-thumb]:shadow-[0_0_0_3px_rgb(96_165_250/0.65),0_1px_3px_rgba(0,0,0,0.15)]
               [&::-moz-range-thumb]:w-3.5
               [&::-moz-range-thumb]:h-3.5
               [&::-moz-range-thumb]:rounded-full
               [&::-moz-range-thumb]:bg-white
               [&::-moz-range-thumb]:border-0
-              [&::-moz-range-thumb]:shadow-[0_0_0_2px_rgb(14_165_233/0.35),0_1px_3px_rgba(0,0,0,0.5)]
+              [&::-moz-range-thumb]:shadow-[0_0_0_2px_rgb(96_165_250/0.35),0_1px_3px_rgba(0,0,0,0.15)]
             "
             aria-label={label}
           />
@@ -150,129 +147,21 @@ export function KeplerianSlider({
             className="
               w-16 h-7 px-1.5
               text-right text-[13px] font-mono font-medium
-              text-slate-100
-              bg-slate-800/70 border border-slate-700/60
+              text-slate-700
+              bg-white border border-slate-200/60
               rounded-md
-              focus:outline-none focus:border-sky-500/60 focus:bg-slate-800
-              focus:ring-1 focus:ring-sky-500/30
+              focus:ring-0
+              focus:outline-none focus:border-blue-200 focus:bg-blue-50/60
               transition-colors duration-150
-              placeholder:text-slate-500
+              placeholder:text-slate-400
             "
           />
           {unit && (
-            <span className="text-[11px] text-slate-500 font-mono w-6 shrink-0">
+            <span className="text-[11px] text-slate-400 font-mono w-6 shrink-0">
               {unit}
             </span>
           )}
         </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Demo / usage example (can be removed in production) ─────────────────────
-
-export default function KeplerianSliderDemo() {
-  const [semiMajorAxis, setSemiMajorAxis] = useState(6786);
-  const [eccentricity, setEccentricity] = useState(0.002);
-  const [inclination, setInclination] = useState(51.6);
-  const [raan, setRaan] = useState(247);
-  const [argOfPerigee, setArgOfPerigee] = useState(130);
-  const [trueAnomaly, setTrueAnomaly] = useState(180);
-
-  return (
-    <div className="min-h-screen bg-[#0d1726] flex items-center justify-center p-8">
-      <div className="w-72 bg-[#111d2e] border border-slate-700/50 rounded-xl p-5 shadow-2xl space-y-6">
-        {/* SHAPE */}
-        <section>
-          <p className="text-[10px] font-semibold tracking-[0.15em] text-slate-500 uppercase mb-3">
-            Shape
-          </p>
-          <div className="space-y-4">
-            <KeplerianSlider
-              label="Semi-major axis"
-              unit="km"
-              value={semiMajorAxis}
-              min={6371}
-              max={42164}
-              step={1}
-              decimals={0}
-              onChange={setSemiMajorAxis}
-            />
-            <KeplerianSlider
-              label="Eccentricity"
-              unit="0-1"
-              value={eccentricity}
-              min={0}
-              max={0.999}
-              step={0.001}
-              decimals={3}
-              onChange={setEccentricity}
-            />
-          </div>
-        </section>
-
-        <div className="h-px bg-slate-700/40" />
-
-        {/* ORIENTATION */}
-        <section>
-          <p className="text-[10px] font-semibold tracking-[0.15em] text-slate-500 uppercase mb-3">
-            Orientation
-          </p>
-          <div className="space-y-4">
-            <KeplerianSlider
-              label="Inclination"
-              unit="°"
-              value={inclination}
-              min={0}
-              max={180}
-              step={0.1}
-              decimals={1}
-              onChange={setInclination}
-            />
-            <KeplerianSlider
-              label="RAAN"
-              unit="°"
-              value={raan}
-              min={0}
-              max={360}
-              step={1}
-              decimals={0}
-              onChange={setRaan}
-            />
-            <KeplerianSlider
-              label="Arg. of perigee"
-              unit="°"
-              value={argOfPerigee}
-              min={0}
-              max={360}
-              step={1}
-              decimals={0}
-              onChange={setArgOfPerigee}
-            />
-          </div>
-        </section>
-
-        <div className="h-px bg-slate-700/40" />
-
-        {/* POSITION */}
-        <section>
-          <p className="text-[10px] font-semibold tracking-[0.15em] text-slate-500 uppercase mb-3">
-            Position
-          </p>
-          <div className="space-y-4">
-            <KeplerianSlider
-              label="True anomaly"
-              unit="°"
-              value={trueAnomaly}
-              min={0}
-              max={360}
-              step={1}
-              decimals={0}
-              onChange={setTrueAnomaly}
-            />
-          </div>
-        </section>
       </div>
     </div>
   );
