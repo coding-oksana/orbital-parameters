@@ -1,10 +1,3 @@
-/**
- * OrbitalControls.tsx — example wiring
- *
- * Drop this into your scene and connect `values` / `onChange`
- * to wherever you store orbit state (zustand, context, etc.).
- */
-
 import { useState } from 'react';
 import { SliderGroup } from './SliderGroup';
 import { OrbitalValues, deriveOrbital } from '../utils/orbitalLimits';

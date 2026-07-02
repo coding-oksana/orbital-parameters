@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
-import type { ParamStatus } from '../utils/orbitalLimits';
+import type { ParamStatus } from '@utils/orbitalLimits';
+import { STATUS_STYLES } from '@constants/styles';
 
 export interface KeplerianSliderProps {
   /** Display label */
@@ -44,34 +45,6 @@ function round(v: number, decimals: number): number {
   const factor = 10 ** decimals;
   return Math.round(v * factor) / factor;
 }
-
-// ─── status chip ─────────────────────────────────────────────────────────────
-
-const STATUS_STYLES: Record<
-  NonNullable<ParamStatus['level']>,
-  { dot: string; text: string; bg: string }
-> = {
-  ok: {
-    dot: 'bg-emerald-400',
-    text: 'text-emerald-700 dark:text-emerald-300',
-    bg: '',
-  },
-  warn: {
-    dot: 'bg-amber-400',
-    text: 'text-amber-700  dark:text-amber-300',
-    bg: 'bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-800/40',
-  },
-  error: {
-    dot: 'bg-red-400',
-    text: 'text-red-700    dark:text-red-300',
-    bg: 'bg-red-50   dark:bg-red-950/40   border border-red-200/60   dark:border-red-800/40',
-  },
-  disabled: {
-    dot: 'bg-slate-300',
-    text: 'text-slate-400  dark:text-slate-500',
-    bg: 'bg-slate-50 dark:bg-slate-900/40 border border-slate-200/40 dark:border-slate-700/40',
-  },
-};
 
 interface StatusChipProps {
   status: ParamStatus;

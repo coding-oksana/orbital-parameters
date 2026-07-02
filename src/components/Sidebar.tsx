@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 
 import { PresetsPanel } from '@components/PresetsPanel';
 import type { OrbitalPreset } from '@typeProps/orbitParams';
-import { PRESETS } from '../constants';
+import { PRESETS } from '@constants/orbits';
 import { OrbitalControls } from './OrbitalControls';
 
 export function Sidebar() {
