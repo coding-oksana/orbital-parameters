@@ -1,6 +1,8 @@
 import { useCallback, useRef, useState } from 'react';
 import type { ParamStatus } from '@utils/orbitalLimits';
-import { STATUS_STYLES } from '@constants/styles';
+import { clamp, round } from '@utils/params';
+import { StatusChip } from './StatusChip';
+import { LimitBadge } from './LimitBadge';
 
 export interface KeplerianSliderProps {
   /** Display label */
@@ -35,74 +37,6 @@ export interface KeplerianSliderProps {
    */
   status?: ParamStatus;
   onChange: (value: number) => void;
-}
-
-function clamp(v: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, v));
-}
-
-function round(v: number, decimals: number): number {
-  const factor = 10 ** decimals;
-  return Math.round(v * factor) / factor;
-}
-
-interface StatusChipProps {
-  status: ParamStatus;
-}
-
-function StatusChip({ status }: StatusChipProps) {
-  if (!status.message) return null;
-  const s = STATUS_STYLES[status.level];
-  return (
-    <div
-      role="alert"
-      className={`
-        flex items-start gap-1.5 px-2 py-1.5 rounded-md
-        text-[11px] leading-snug
-        ${s.bg} ${s.text}
-      `}
-    >
-      <span
-        className={`mt-[3px] shrink-0 w-1.5 h-1.5 rounded-full ${s.dot}`}
-        aria-hidden
-      />
-      <span>{status.message}</span>
-    </div>
-  );
-}
-
-// ─── limit badge ──────────────────────────────────────────────────────────────
-
-interface LimitBadgeProps {
-  label: string;
-  value: number;
-  decimals: number;
-  unit?: string;
-  violated: boolean;
-}
-
-function LimitBadge({
-  label,
-  value,
-  decimals,
-  unit,
-  violated,
-}: LimitBadgeProps) {
-  return (
-    <span
-      className={`
-        text-[10px] font-mono tabular-nums
-        ${
-          violated
-            ? 'text-red-500 dark:text-red-400 font-semibold'
-            : 'text-slate-400 dark:text-slate-500'
-        }
-      `}
-    >
-      {label} {round(value, decimals)}
-      {unit ?? ''}
-    </span>
-  );
 }
 
 export function KeplerianSlider({

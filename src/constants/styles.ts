@@ -1,4 +1,4 @@
-import { OrbitalPreset } from '@typeProps/orbitParams';
+import { OrbitalPreset, OrbitRegime } from '@typeProps/orbitParams';
 import { ParamStatus } from '@utils/orbitalLimits';
 
 export const PRESETS: OrbitalPreset[] = [
@@ -69,5 +69,31 @@ export const STATUS_STYLES: Record<
     dot: 'bg-slate-300',
     text: 'text-slate-400  dark:text-slate-500',
     bg: 'bg-slate-50 dark:bg-slate-900/40 border border-slate-200/40 dark:border-slate-700/40',
+  },
+};
+
+export const REGIME_STYLES: Record<
+  OrbitRegime,
+  { badge: string; dot: string }
+> = {
+  LEO: {
+    badge: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/25',
+    dot: 'bg-emerald-400',
+  },
+  MEO: {
+    badge: 'text-amber-400 bg-amber-400/10 border-amber-400/25',
+    dot: 'bg-amber-400',
+  },
+  GEO: {
+    badge: 'text-violet-400 bg-violet-400/10 border-violet-400/25',
+    dot: 'bg-violet-400',
+  },
+  HEO: {
+    badge: 'text-rose-400 bg-rose-400/10 border-rose-400/25',
+    dot: 'bg-rose-400',
+  },
+  SSO: {
+    badge: 'text-sky-400 bg-sky-400/10 border-sky-400/25',
+    dot: 'bg-sky-400',
   },
 };
