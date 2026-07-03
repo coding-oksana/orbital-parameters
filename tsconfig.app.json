@@ -5,7 +5,8 @@
       "@typeProps/*": ["./src/types/*"],
       "@pages/*": ["./src/pages/*"],
       "@utils/*": ["./src/utils/*"],
-      "@atoms/*": ["./src/atoms/*"]
+      "@atoms/*": ["./src/atoms/*"],
+      "@constants/*": ["./src/constants/*"],
     },
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2020",

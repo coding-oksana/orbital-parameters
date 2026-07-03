@@ -11,6 +11,7 @@ export default defineConfig({
       '@pages': path.resolve(__dirname, './src/pages'),
       '@utils': path.resolve(__dirname, './src/utils'),
       '@atoms': path.resolve(__dirname, './src/atoms'),
+      '@constants': path.resolve(__dirname, './src/constants'),
     },
   },
 });
