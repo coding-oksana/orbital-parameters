@@ -1,23 +1,16 @@
-import { useState } from 'react';
 import { SliderGroup } from './SliderGroup';
 import { OrbitalValues, deriveOrbital } from '../utils/orbitalLimits';
 
-const INITIAL: OrbitalValues = {
-  a: 12_000, // km
-  e: 0.2,
-  i: 28.5, // °
-  raan: 120, // °
-  omega: 45, // °
-  nu: 0, // °
-};
+export interface OrbitalControlsProps {
+  /** Controlled values — owned by the parent so presets can drive updates */
+  values: OrbitalValues;
+  onChange: (id: string, value: number) => void;
+}
 
-export function OrbitalControls() {
-  const [values, setValues] = useState<OrbitalValues>(INITIAL);
-
-  function handleChange(id: string, value: number) {
-    setValues((prev) => ({ ...prev, [id]: value }));
-  }
-
+export function OrbitalControls({
+  values,
+  onChange: handleChange,
+}: OrbitalControlsProps) {
   const derived = deriveOrbital(values);
 
   return (
