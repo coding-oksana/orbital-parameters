@@ -39,7 +39,6 @@ export function Sidebar() {
 
   const handleValueChange = useCallback((id: string, value: number) => {
     setValues((prev) => ({ ...prev, [id]: value }));
-    // A manual tweak means we no longer exactly match the preset.
     setActivePresetId(null);
   }, []);
 

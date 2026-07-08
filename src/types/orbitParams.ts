@@ -1,4 +1,3 @@
-/** The six classical Keplerian orbital elements. */
 export interface KeplerianElements {
   /** Semi-major axis (km) — defines the size of the orbit */
   a: number;
@@ -19,7 +18,6 @@ export type OrbitRegime = 'LEO' | 'MEO' | 'GEO' | 'HEO' | 'SSO';
 export interface OrbitalPreset {
   id: string;
   name: string;
-  /** Short descriptive line shown under the name */
   subtitle: string;
   regime: OrbitRegime;
   elements: KeplerianElements;

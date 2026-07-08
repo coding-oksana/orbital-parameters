@@ -2,7 +2,6 @@ import { SliderGroup } from './SliderGroup';
 import { OrbitalValues, deriveOrbital } from '../utils/orbitalLimits';
 
 export interface OrbitalControlsProps {
-  /** Controlled values — owned by the parent so presets can drive updates */
   values: OrbitalValues;
   onChange: (id: string, value: number) => void;
 }
