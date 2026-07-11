@@ -94,8 +94,6 @@ export function KeplerianSlider({
       ? (clamp(Math.min(value, effectiveMax), min, max) - min) / railRange
       : 0;
 
-  // Full-opacity, higher-saturation fills so the filled track reads clearly
-  // against the (now also darker) background rail in every state.
   const trackColor = isDisabled
     ? 'bg-slate-400 dark:bg-slate-500'
     : outOfRange
@@ -224,7 +222,16 @@ export function KeplerianSlider({
           />
         </div>
 
-        <div className="flex items-center gap-1 shrink-0">
+        {/*
+          Fixed-width, right-aligned block for value + unit. Previously the
+          unit <span> was only rendered when `unit` existed, so rows without
+          a unit (e.g. Eccentricity) produced a narrower trailing block and
+          drifted out of alignment with every other row. Now the block has
+          an explicit width and the unit slot always renders (empty string
+          when there's no unit), so every row's right edge lands in the
+          same place regardless of unit text or its absence.
+        */}
+        <div className="flex items-center gap-1 w-24 shrink-0 justify-end">
           <input
             ref={inputRef}
             type="text"
@@ -250,11 +257,9 @@ export function KeplerianSlider({
               ${inputBorderClass}
             `}
           />
-          {unit && (
-            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono w-6 shrink-0">
-              {unit}
-            </span>
-          )}
+          <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono w-6 shrink-0 text-left">
+            {unit ?? ''}
+          </span>
         </div>
       </div>
 
