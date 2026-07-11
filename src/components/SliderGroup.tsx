@@ -28,7 +28,7 @@ export function SliderGroup({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-[10px] font-semibold tracking-[0.15em] text-slate-400/70 uppercase select-none">
+      <p className="text-[12px] font-semibold tracking-[0.15em] text-slate-700 uppercase select-none">
         {title}
       </p>
 

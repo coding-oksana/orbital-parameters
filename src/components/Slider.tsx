@@ -94,23 +94,26 @@ export function KeplerianSlider({
       ? (clamp(Math.min(value, effectiveMax), min, max) - min) / railRange
       : 0;
 
+  // Full-opacity, higher-saturation fills so the filled track reads clearly
+  // against the (now also darker) background rail in every state.
   const trackColor = isDisabled
-    ? 'bg-slate-200/60 dark:bg-slate-700/40'
+    ? 'bg-slate-400 dark:bg-slate-500'
     : outOfRange
-      ? 'bg-red-300/70 dark:bg-red-700/50'
-      : 'bg-blue-400/70 dark:bg-blue-500/60';
+      ? 'bg-red-500 dark:bg-red-500'
+      : 'bg-blue-500 dark:bg-blue-400';
 
-  const inputBorderClass =
-    outOfRange && !isDisabled
-      ? 'border-red-300 dark:border-red-700 focus:border-red-400 bg-red-50/60 dark:bg-red-950/20'
-      : 'border-slate-200/60 dark:border-slate-700/50 focus:border-blue-200 dark:focus:border-blue-700 focus:bg-blue-50/60 dark:focus:bg-blue-950/20';
+  const inputBorderClass = isDisabled
+    ? 'border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-800/60 text-slate-400 dark:text-slate-500'
+    : outOfRange
+      ? 'border-2 border-red-400 dark:border-red-600 focus:border-red-500 bg-red-50 dark:bg-red-950/30'
+      : 'border border-slate-300 dark:border-slate-600 focus:border-blue-400 dark:focus:border-blue-500 focus:bg-blue-50/60 dark:focus:bg-blue-950/20';
 
   return (
     <div
-      className={`group flex flex-col gap-1.5 ${isDisabled ? 'opacity-50' : ''}`}
+      className={`group flex flex-col gap-1.5 ${isDisabled ? 'opacity-70' : ''}`}
     >
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-medium tracking-wide text-slate-500 dark:text-slate-400 uppercase select-none">
+        <span className="text-[11px] font-medium tracking-wide text-slate-700 dark:text-slate-400 uppercase select-none">
           {label}
         </span>
         <div className="flex items-center gap-2">
@@ -137,11 +140,11 @@ export function KeplerianSlider({
 
       <div className="flex items-center gap-3">
         <div className="relative flex-1 h-4 flex items-center">
-          <div className="absolute inset-x-0 h-[3px] rounded-full bg-slate-200 dark:bg-slate-700" />
+          <div className="absolute inset-x-0 h-[3px] rounded-full bg-slate-300 dark:bg-slate-600" />
 
           {computedMax !== undefined && computedMax < max && (
             <div
-              className="absolute h-[7px] w-[1.5px] rounded-full bg-slate-400/60 dark:bg-slate-500/60 -translate-x-[0.75px]"
+              className="absolute h-[9px] w-[2px] rounded-full bg-slate-600 dark:bg-slate-300 -translate-x-[1px]"
               style={{
                 left: `${((clamp(computedMax, min, max) - min) / railRange) * 100}%`,
               }}
@@ -150,7 +153,7 @@ export function KeplerianSlider({
           )}
           {computedMin !== undefined && computedMin > min && (
             <div
-              className="absolute h-[7px] w-[1.5px] rounded-full bg-slate-400/60 dark:bg-slate-500/60 -translate-x-[0.75px]"
+              className="absolute h-[9px] w-[2px] rounded-full bg-slate-600 dark:bg-slate-300 -translate-x-[1px]"
               style={{
                 left: `${((clamp(computedMin, min, max) - min) / railRange) * 100}%`,
               }}
@@ -174,7 +177,7 @@ export function KeplerianSlider({
             value={value}
             disabled={isDisabled}
             onChange={handleSliderChange}
-            className="
+            className={`
               relative w-full h-4 appearance-none bg-transparent cursor-pointer
               disabled:cursor-not-allowed
               focus:outline-none
@@ -182,21 +185,38 @@ export function KeplerianSlider({
               [&::-webkit-slider-thumb]:w-3.5
               [&::-webkit-slider-thumb]:h-3.5
               [&::-webkit-slider-thumb]:rounded-full
-              [&::-webkit-slider-thumb]:bg-white
-              [&::-webkit-slider-thumb]:border
-              [&::-webkit-slider-thumb]:border-slate-300
-              [&::-webkit-slider-thumb]:shadow-[0_0_0_2px_rgb(96_165_250/0.35),0_1px_3px_rgba(0,0,0,0.15)]
               [&::-webkit-slider-thumb]:transition-shadow
               [&::-webkit-slider-thumb]:duration-150
-              hover:[&::-webkit-slider-thumb]:shadow-[0_0_0_3px_rgb(96_165_250/0.5),0_1px_3px_rgba(0,0,0,0.15)]
-              focus:[&::-webkit-slider-thumb]:shadow-[0_0_0_3px_rgb(96_165_250/0.65),0_1px_3px_rgba(0,0,0,0.15)]
               [&::-moz-range-thumb]:w-3.5
               [&::-moz-range-thumb]:h-3.5
               [&::-moz-range-thumb]:rounded-full
-              [&::-moz-range-thumb]:bg-white
               [&::-moz-range-thumb]:border-0
-              [&::-moz-range-thumb]:shadow-[0_0_0_2px_rgb(96_165_250/0.35),0_1px_3px_rgba(0,0,0,0.15)]
-            "
+              ${
+                isDisabled
+                  ? `
+                    [&::-webkit-slider-thumb]:bg-slate-300
+                    [&::-webkit-slider-thumb]:dark:bg-slate-600
+                    [&::-webkit-slider-thumb]:border
+                    [&::-webkit-slider-thumb]:border-slate-400
+                    [&::-webkit-slider-thumb]:dark:border-slate-500
+                    [&::-webkit-slider-thumb]:shadow-none
+                    [&::-moz-range-thumb]:bg-slate-300
+                    [&::-moz-range-thumb]:dark:bg-slate-600
+                  `
+                  : `
+                    [&::-webkit-slider-thumb]:bg-white
+                    [&::-webkit-slider-thumb]:border-2
+                    [&::-webkit-slider-thumb]:border-blue-500
+                    [&::-webkit-slider-thumb]:shadow-[0_0_0_2px_rgb(96_165_250/0.45),0_1px_3px_rgba(0,0,0,0.2)]
+                    hover:[&::-webkit-slider-thumb]:shadow-[0_0_0_4px_rgb(96_165_250/0.65),0_1px_3px_rgba(0,0,0,0.2)]
+                    focus:[&::-webkit-slider-thumb]:shadow-[0_0_0_4px_rgb(96_165_250/0.8),0_1px_3px_rgba(0,0,0,0.2)]
+                    [&::-moz-range-thumb]:bg-white
+                    [&::-moz-range-thumb]:border-2
+                    [&::-moz-range-thumb]:border-blue-500
+                    [&::-moz-range-thumb]:shadow-[0_0_0_2px_rgb(96_165_250/0.45),0_1px_3px_rgba(0,0,0,0.2)]
+                  `
+              }
+            `}
             aria-label={label}
             aria-valuenow={value}
             aria-valuemin={effectiveMin}
@@ -221,11 +241,12 @@ export function KeplerianSlider({
               text-right text-[13px] font-mono font-medium
               text-slate-700 dark:text-slate-200
               bg-white dark:bg-slate-800
-              border rounded-md
+              rounded-md
               focus:ring-0 focus:outline-none
               transition-colors duration-150
               placeholder:text-slate-400
-              disabled:opacity-50 disabled:cursor-not-allowed
+              disabled:cursor-not-allowed
+              disabled:border
               ${inputBorderClass}
             `}
           />
