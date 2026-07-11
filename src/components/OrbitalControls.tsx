@@ -1,5 +1,6 @@
 import { SliderGroup } from './SliderGroup';
-import { OrbitalValues, deriveOrbital } from '../utils/orbitalLimits';
+import { deriveOrbital } from '@utils/orbitalLimits';
+import { OrbitalValues } from '@typeProps/orbitParams';
 
 export interface OrbitalControlsProps {
   values: OrbitalValues;

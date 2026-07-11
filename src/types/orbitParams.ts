@@ -35,3 +35,12 @@ export interface DerivedOrbitalStats {
   /** Number of complete orbits per day */
   revsPerDay: number;
 }
+
+export interface OrbitalValues {
+  a: number; // km
+  e: number; // 0–∞ (< 1 bound, ≥ 1 open)
+  i: number; // deg, 0–180
+  raan: number; // deg, 0–360
+  omega: number; // deg, 0–360
+  nu: number; // deg, 0–360
+}

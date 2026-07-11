@@ -1,9 +1,6 @@
 import { KeplerianSlider, KeplerianSliderProps } from './Slider';
-import {
-  computeAllLimits,
-  OrbitalValues,
-  ParamLimits,
-} from '../utils/orbitalLimits';
+import { computeAllLimits, ParamLimits } from '../utils/orbitalLimits';
+import { OrbitalValues } from '@typeProps/orbitParams';
 
 export type SliderDef = Omit<
   KeplerianSliderProps,

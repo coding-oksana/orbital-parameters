@@ -1,3 +1,5 @@
+import { OrbitalValues } from '@typeProps/orbitParams';
+
 export const EARTH_R_KM = 6_371; // mean radius
 export const ATMO_KM = 100; // Kármán line
 export const MIN_ORBIT_R = EARTH_R_KM + ATMO_KM; // 6 471 km
@@ -11,7 +13,6 @@ function clamp(v: number, lo: number, hi: number): number {
 export type StatusLevel = 'ok' | 'warn' | 'error' | 'disabled';
 
 export interface ParamStatus {
-  /** Chip message shown beneath the slider. Empty string = no chip. */
   message: string;
   level: StatusLevel;
 }
@@ -20,15 +21,6 @@ export interface ParamLimits {
   min: number;
   max: number;
   status: ParamStatus;
-}
-
-export interface OrbitalValues {
-  a: number; // km
-  e: number; // 0–∞ (< 1 bound, ≥ 1 open)
-  i: number; // deg, 0–180
-  raan: number; // deg, 0–360
-  omega: number; // deg, 0–360
-  nu: number; // deg, 0–360
 }
 
 // ─── semi-major axis ─────────────────────────────────────────────────────────

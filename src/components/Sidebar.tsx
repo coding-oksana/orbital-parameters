@@ -1,9 +1,12 @@
 import { useCallback, useState } from 'react';
 
 import { PresetsPanel } from '@components/PresetsPanel';
-import type { OrbitalPreset, KeplerianElements } from '@typeProps/orbitParams';
+import type {
+  OrbitalPreset,
+  KeplerianElements,
+  OrbitalValues,
+} from '@typeProps/orbitParams';
 import { PRESETS } from '@constants/orbits';
-import type { OrbitalValues } from '../utils/orbitalLimits';
 import { OrbitalControls } from './OrbitalControls';
 
 function elementsToOrbitalValues(elements: KeplerianElements): OrbitalValues {
