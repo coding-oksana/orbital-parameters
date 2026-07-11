@@ -1,9 +1,6 @@
 import { KeplerianSlider, KeplerianSliderProps } from './Slider';
-import {
-  computeAllLimits,
-  OrbitalValues,
-  ParamLimits,
-} from '../utils/orbitalLimits';
+import { computeAllLimits, ParamLimits } from '../utils/orbitalLimits';
+import { OrbitalValues } from '@typeProps/orbitParams';
 
 export type SliderDef = Omit<
   KeplerianSliderProps,
@@ -25,19 +22,16 @@ export function SliderGroup({
   onChange,
   orbitalValues,
 }: SliderGroupProps) {
-  // Compute all cross-parameter limits in one pass.
   const limits: Partial<Record<string, ParamLimits>> = orbitalValues
     ? computeAllLimits(orbitalValues)
     : {};
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Group heading */}
-      <p className="text-[10px] font-semibold tracking-[0.15em] text-slate-400/70 uppercase select-none">
+      <p className="text-[14px] font-semibold tracking-[0.15em] text-slate-700 uppercase select-none">
         {title}
       </p>
 
-      {/* Sliders */}
       <div className="flex flex-col gap-4">
         {sliders.map(({ id, ...sliderProps }) => {
           const computed = limits[id];

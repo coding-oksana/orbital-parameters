@@ -67,7 +67,7 @@ export const STATUS_STYLES: Record<
   },
   disabled: {
     dot: 'bg-slate-300',
-    text: 'text-slate-400  dark:text-slate-500',
+    text: 'text-slate-600  dark:text-slate-500',
     bg: 'bg-slate-50 dark:bg-slate-900/40 border border-slate-200/40 dark:border-slate-700/40',
   },
 };

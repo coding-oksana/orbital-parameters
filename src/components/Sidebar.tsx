@@ -1,9 +1,12 @@
 import { useCallback, useState } from 'react';
 
 import { PresetsPanel } from '@components/PresetsPanel';
-import type { OrbitalPreset, KeplerianElements } from '@typeProps/orbitParams';
+import type {
+  OrbitalPreset,
+  KeplerianElements,
+  OrbitalValues,
+} from '@typeProps/orbitParams';
 import { PRESETS } from '@constants/orbits';
-import type { OrbitalValues } from '../utils/orbitalLimits';
 import { OrbitalControls } from './OrbitalControls';
 
 function elementsToOrbitalValues(elements: KeplerianElements): OrbitalValues {
@@ -39,7 +42,6 @@ export function Sidebar() {
 
   const handleValueChange = useCallback((id: string, value: number) => {
     setValues((prev) => ({ ...prev, [id]: value }));
-    // A manual tweak means we no longer exactly match the preset.
     setActivePresetId(null);
   }, []);
 
