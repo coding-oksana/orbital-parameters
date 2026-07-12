@@ -1,5 +1,5 @@
 import { STATUS_STYLES } from '@constants/styles';
-import { ParamStatus } from '@utils/orbitalLimits';
+import { ParamStatus } from '@typeProps/orbitParams';
 
 interface StatusChipProps {
   status: ParamStatus;

@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import type { ParamStatus } from '@utils/orbitalLimits';
+import type { ParamStatus } from '@typeProps/orbitParams';
 import { clamp, round } from '@utils/params';
 import { StatusChip } from './StatusChip';
 import { LimitBadge } from './LimitBadge';

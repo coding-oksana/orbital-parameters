@@ -1,5 +1,5 @@
 import { OrbitalPreset, OrbitRegime } from '@typeProps/orbitParams';
-import { ParamStatus } from '@utils/orbitalLimits';
+import { ParamStatus } from '@typeProps/orbitParams';
 
 export const PRESETS: OrbitalPreset[] = [
   {
