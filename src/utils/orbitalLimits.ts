@@ -1,61 +1,40 @@
-import { OrbitalValues } from '@typeProps/orbitParams';
-
-export const EARTH_R_KM = 6_371; // mean radius
-export const ATMO_KM = 100; // Kármán line
-export const MIN_ORBIT_R = EARTH_R_KM + ATMO_KM; // 6 471 km
-export const HILL_KM = 924_600; // Earth Hill sphere (~60 % stability limit)
-export const MU_KM3_S2 = 398_600.4418; // GM Earth (km³/s²)
-
-function clamp(v: number, lo: number, hi: number): number {
-  return Math.min(hi, Math.max(lo, v));
-}
-
-export type StatusLevel = 'ok' | 'warn' | 'error' | 'disabled';
-
-export interface ParamStatus {
-  message: string;
-  level: StatusLevel;
-}
-
-export interface ParamLimits {
-  min: number;
-  max: number;
-  status: ParamStatus;
-}
+import {
+  OrbitalValues,
+  ParamLimits,
+  ParamStatus,
+} from '@typeProps/orbitParams';
+import { EARTH_R_KM, MU_KM3_S2, A_MIN_KM, A_MAX_KM } from '@constants/orbits';
 
 // ─── semi-major axis ─────────────────────────────────────────────────────────
 
-export function limitsA(e: number): ParamLimits {
-  // periapsis must clear atmosphere: a(1−e) > R+atmo  →  a > (R+atmo)/(1−e)
-  const eBound = clamp(e, 0, 0.9999);
-  const min = e < 1 ? Math.ceil(MIN_ORBIT_R / (1 - eBound)) : MIN_ORBIT_R;
-  // apoapsis must stay inside Hill sphere: a(1+e) < Hill  →  a < Hill/(1+e)
-  const max = e < 1 ? Math.floor(HILL_KM / (1 + e)) : HILL_KM * 10; // open orbit
-
-  const status: ParamStatus =
-    e >= 1
-      ? { message: 'Open orbit — a is a scale parameter only', level: 'warn' }
-      : { message: '', level: 'ok' };
-
-  return { min, max, status };
+export function limitsA(): ParamLimits {
+  // Fixed practical range — no cross-parameter coupling needed.
+  // The slider def already enforces a_min; physics validity is on the user.
+  return {
+    min: A_MIN_KM,
+    max: A_MAX_KM,
+    status: { message: '', level: 'ok' },
+  };
 }
 
 // ─── eccentricity ─────────────────────────────────────────────────────────────
 
-export function limitsE(a: number, allowOpen = false): ParamLimits {
-  // periapsis must not enter atmosphere: e < 1 − (R+atmo)/a
-  const eMaxAtmo = Math.max(0, 1 - MIN_ORBIT_R / a);
-  const max = allowOpen ? 5 : Math.min(eMaxAtmo, 0.9999);
+export function limitsE(a: number): ParamLimits {
+  // Hard physics: periapsis must stay above Earth's surface.
+  // e_max = 1 − R_Earth / a
+  const eMax = Math.max(0, 1 - EARTH_R_KM / a);
 
-  let status: ParamStatus;
-  if (eMaxAtmo < 0.001) {
-    status = {
-      message: 'Orbit too low — raise a before increasing e',
-      level: 'warn',
-    };
-  } else {
-    status = { message: '', level: 'ok' };
-  }
+  // Clamp to 0.99 so the slider stays in the bound-orbit regime by default.
+  // If you want to support hyperbolic orbits, raise this to e.g. 5.
+  const max = Math.min(eMax, 0.99);
+
+  const status: ParamStatus =
+    eMax < 0.01
+      ? {
+          message: 'a is too low to allow any eccentricity — raise a first',
+          level: 'warn',
+        }
+      : { message: '', level: 'ok' };
 
   return { min: 0, max, status };
 }
@@ -63,7 +42,6 @@ export function limitsE(a: number, allowOpen = false): ParamLimits {
 // ─── inclination ─────────────────────────────────────────────────────────────
 
 export function limitsI(): ParamLimits {
-  // Always 0–180°, unconditionally.
   return { min: 0, max: 180, status: { message: '', level: 'ok' } };
 }
 
@@ -107,51 +85,41 @@ export function limitsNu(e: number): ParamLimits {
   if (e < 1) {
     return { min: 0, max: 359.99, status: { message: '', level: 'ok' } };
   }
-  // Hyperbola: object escapes before completing a revolution.
-  // Maximum |ν| = arccos(−1/e)
+  // Hyperbolic: ν is bounded by the asymptote angle arccos(−1/e).
   const nuMaxDeg = (Math.acos(-1 / e) * 180) / Math.PI;
   return {
     min: -nuMaxDeg,
     max: nuMaxDeg,
     status: {
-      message: `Hyperbolic orbit — ν is bounded to ±${nuMaxDeg.toFixed(1)}° (asymptote angle)`,
+      message: `Hyperbolic orbit — ν bounded to ±${nuMaxDeg.toFixed(1)}°`,
       level: 'warn',
     },
   };
 }
 
-// ─── derived quantities (read-only, useful for display) ──────────────────────
+// ─── derived quantities ───────────────────────────────────────────────────────
 
 export interface DerivedOrbital {
-  rPeriapsis: number | null; // km
-  rApoapsis: number | null; // km (null for open orbits)
-  periodMin: number | null; // minutes (null for open orbits)
+  rPeriapsis: number; // km — always defined
+  rApoapsis: number | null; // km — null for hyperbolic
+  periodMin: number | null; // minutes — null for hyperbolic
   vPeriapsis: number | null; // km/s
-  vApoapsis: number | null; // km/s (null for open orbits)
-  orbitType: 'circular' | 'ellipse' | 'parabola' | 'hyperbola';
+  vApoapsis: number | null; // km/s — null for hyperbolic
+  orbitType: 'circular' | 'ellipse' | 'hyperbola';
 }
 
 export function deriveOrbital({
   a,
   e,
 }: Pick<OrbitalValues, 'a' | 'e'>): DerivedOrbital {
-  const orbitType =
-    e < 0.001
-      ? 'circular'
-      : e < 1
-        ? 'ellipse'
-        : e === 1
-          ? 'parabola'
-          : 'hyperbola';
+  // e === 1 (parabola) is unreachable with floating-point sliders — folded into hyperbola.
+  const orbitType = e < 0.001 ? 'circular' : e < 1 ? 'ellipse' : 'hyperbola';
 
   const rP = a * (1 - e);
   const rA = e < 1 ? a * (1 + e) : null;
   const T = e < 1 ? (2 * Math.PI * Math.sqrt(a ** 3 / MU_KM3_S2)) / 60 : null;
-
-  // vis-viva: v = sqrt(mu*(2/r - 1/a))
   const vP = rP > 0 ? Math.sqrt(MU_KM3_S2 * (2 / rP - 1 / a)) : null;
-  const vA =
-    rA != null && rA > 0 ? Math.sqrt(MU_KM3_S2 * (2 / rA - 1 / a)) : null;
+  const vA = rA != null ? Math.sqrt(MU_KM3_S2 * (2 / rA - 1 / a)) : null;
 
   return {
     rPeriapsis: rP,
@@ -169,7 +137,7 @@ export function computeAllLimits(
   v: OrbitalValues
 ): Record<keyof OrbitalValues, ParamLimits> {
   return {
-    a: limitsA(v.e),
+    a: limitsA(),
     e: limitsE(v.a),
     i: limitsI(),
     raan: limitsRaan(v.i),

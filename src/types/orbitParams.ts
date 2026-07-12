@@ -44,3 +44,16 @@ export interface OrbitalValues {
   omega: number; // deg, 0–360
   nu: number; // deg, 0–360
 }
+
+export type StatusLevel = 'ok' | 'warn' | 'error' | 'disabled';
+
+export interface ParamStatus {
+  message: string;
+  level: StatusLevel;
+}
+
+export interface ParamLimits {
+  min: number;
+  max: number;
+  status: ParamStatus;
+}
