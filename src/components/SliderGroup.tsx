@@ -1,10 +1,11 @@
 import { KeplerianSlider, KeplerianSliderProps } from './Slider';
-import { computeAllLimits, ParamLimits } from '../utils/orbitalLimits';
-import { OrbitalValues } from '@typeProps/orbitParams';
+import { computeAllLimits } from '@utils/orbitalLimits';
+import type { OrbitalValues, ParamLimits } from '@typeProps/orbitParams';
+import { PARAM_TOOLTIPS } from '@utils/paramTooltips';
 
 export type SliderDef = Omit<
   KeplerianSliderProps,
-  'onChange' | 'computedMin' | 'computedMax' | 'status'
+  'onChange' | 'computedMin' | 'computedMax' | 'status' | 'tooltip'
 > & {
   id: string;
 };
@@ -28,7 +29,7 @@ export function SliderGroup({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-[14px] font-semibold tracking-[0.15em] text-slate-700 uppercase select-none">
+      <p className="text-[10px] font-semibold tracking-[0.15em] text-slate-400/70 uppercase select-none">
         {title}
       </p>
 
@@ -42,6 +43,7 @@ export function SliderGroup({
               computedMin={computed?.min}
               computedMax={computed?.max}
               status={computed?.status}
+              tooltip={PARAM_TOOLTIPS[id]}
               onChange={(value: number) => onChange(id, value)}
             />
           );

@@ -3,6 +3,7 @@ import type { ParamStatus } from '@typeProps/orbitParams';
 import { clamp, round } from '@utils/params';
 import { StatusChip } from './StatusChip';
 import { LimitBadge } from './LimitBadge';
+import { InfoTooltip } from './InfoTooltip';
 
 export interface KeplerianSliderProps {
   label: string;
@@ -15,6 +16,8 @@ export interface KeplerianSliderProps {
   step?: number;
   decimals?: number;
   status?: ParamStatus;
+  /** Optional tooltip content shown on ⓘ hover/focus next to the label. */
+  tooltip?: React.ReactNode;
   onChange: (value: number) => void;
 }
 
@@ -29,6 +32,7 @@ export function KeplerianSlider({
   step = 1,
   decimals = 0,
   status,
+  tooltip,
   onChange,
 }: KeplerianSliderProps) {
   const [draft, setDraft] = useState<string | null>(null);
@@ -111,9 +115,15 @@ export function KeplerianSlider({
       className={`group flex flex-col gap-1.5 ${isDisabled ? 'opacity-70' : ''}`}
     >
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-medium tracking-wide text-slate-700 dark:text-slate-400 uppercase select-none">
-          {label}
-        </span>
+        {/* Label + optional info icon */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-[11px] font-medium tracking-wide text-slate-700 dark:text-slate-400 uppercase select-none">
+            {label}
+          </span>
+          {tooltip && <InfoTooltip content={tooltip} />}
+        </div>
+
+        {/* Dynamic limit badges */}
         <div className="flex items-center gap-2">
           {computedMin !== undefined && computedMin !== min && (
             <LimitBadge
@@ -222,15 +232,6 @@ export function KeplerianSlider({
           />
         </div>
 
-        {/*
-          Fixed-width, right-aligned block for value + unit. Previously the
-          unit <span> was only rendered when `unit` existed, so rows without
-          a unit (e.g. Eccentricity) produced a narrower trailing block and
-          drifted out of alignment with every other row. Now the block has
-          an explicit width and the unit slot always renders (empty string
-          when there's no unit), so every row's right edge lands in the
-          same place regardless of unit text or its absence.
-        */}
         <div className="flex items-center gap-1 w-24 shrink-0 justify-end">
           <input
             ref={inputRef}
