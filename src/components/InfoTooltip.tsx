@@ -53,7 +53,7 @@ export function InfoTooltip({ content }: InfoTooltipProps) {
         <div
           role="tooltip"
           className="
-            absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2
+            absolute z-50 left-full top-1/2 -translate-y-1/2 ml-2
             w-56 px-3 py-2.5
             bg-slate-900 dark:bg-slate-800
             text-slate-100 dark:text-slate-200
@@ -63,11 +63,11 @@ export function InfoTooltip({ content }: InfoTooltipProps) {
           "
         >
           {content}
-          {/* arrow */}
+          {/* left-pointing arrow */}
           <span
             className="
-              absolute top-full left-1/2 -translate-x-1/2
-              border-4 border-transparent border-t-slate-900 dark:border-t-slate-800
+              absolute right-full top-1/2 -translate-y-1/2
+              border-4 border-transparent border-r-slate-900 dark:border-r-slate-800
             "
             aria-hidden
           />
