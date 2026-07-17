@@ -8,6 +8,7 @@ import type {
 } from '@typeProps/orbitParams';
 import { PRESETS } from '@constants/orbits';
 import { OrbitalControls } from './OrbitalControls';
+import { OrbitScene } from './OrbitScene';
 
 function elementsToOrbitalValues(elements: KeplerianElements): OrbitalValues {
   return {
@@ -46,13 +47,16 @@ export function Sidebar() {
   }, []);
 
   return (
-    <div className="w-sm">
-      <PresetsPanel
-        presets={PRESETS}
-        activePresetId={activePresetId}
-        onSelect={handlePresetSelect}
-      />
-      <OrbitalControls values={values} onChange={handleValueChange} />
+    <div>
+      <div className="w-sm">
+        <PresetsPanel
+          presets={PRESETS}
+          activePresetId={activePresetId}
+          onSelect={handlePresetSelect}
+        />
+        <OrbitalControls values={values} onChange={handleValueChange} />
+      </div>
+      <OrbitScene values={values} />
     </div>
   );
 }
