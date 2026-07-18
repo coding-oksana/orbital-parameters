@@ -32,7 +32,7 @@ const INITIAL_VALUES: OrbitalValues = elementsToOrbitalValues(
   }
 );
 
-export function Sidebar() {
+export function OrbitalVisualisation() {
   const [activePresetId, setActivePresetId] = useState<string | null>('iss');
   const [values, setValues] = useState<OrbitalValues>(INITIAL_VALUES);
 
@@ -47,8 +47,8 @@ export function Sidebar() {
   }, []);
 
   return (
-    <div>
-      <div className="w-sm">
+    <div className="flex flex-row h-screen w-screen overflow-hidden">
+      <div className="w-sm shrink-0 overflow-y-auto">
         <PresetsPanel
           presets={PRESETS}
           activePresetId={activePresetId}
@@ -56,7 +56,9 @@ export function Sidebar() {
         />
         <OrbitalControls values={values} onChange={handleValueChange} />
       </div>
-      <OrbitScene values={values} />
+      <div className="flex-1 h-full">
+        <OrbitScene values={values} />
+      </div>
     </div>
   );
 }

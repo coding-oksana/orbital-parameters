@@ -1,4 +1,3 @@
-// components/OrbitScene.tsx
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Line, Sphere } from '@react-three/drei';
 import { useMemo } from 'react';
@@ -37,7 +36,7 @@ export function OrbitScene({ values }: { values: OrbitalValues }) {
   );
 
   return (
-    <div style={{ width: '100%', height: '500px' }}>
+    <div style={{ width: '100%', height: '100%' }}>
       <Canvas camera={{ position: [15, 10, 15], fov: 50 }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[50, 20, 30]} intensity={1.2} />
