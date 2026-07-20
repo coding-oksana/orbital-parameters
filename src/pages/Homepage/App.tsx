@@ -1,9 +1,9 @@
-import { Sidebar } from '@components/Sidebar';
+import { OrbitalVisualisation } from '@components/OrbitalVisualisation';
 
 function App() {
   return (
     <div className="flex flex-row">
-      <Sidebar />
+      <OrbitalVisualisation />
     </div>
   );
 }
