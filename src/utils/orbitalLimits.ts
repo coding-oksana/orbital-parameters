@@ -1,53 +1,39 @@
 import {
+  DerivedOrbital,
   OrbitalValues,
   ParamLimits,
-  ParamStatus,
 } from '@typeProps/orbitParams';
 import { EARTH_R_KM, MU_KM3_S2, A_MIN_KM, A_MAX_KM } from '@constants/orbits';
 
 // ─── semi-major axis ─────────────────────────────────────────────────────────
 
 export function limitsA(): ParamLimits {
-  // Fixed practical range — no cross-parameter coupling needed.
-  // The slider def already enforces a_min; physics validity is on the user.
-  return {
-    min: A_MIN_KM,
-    max: A_MAX_KM,
-    status: { message: '', level: 'ok' },
-  };
+  // Fixed rail — no status needed, slider enforces bounds.
+  return { min: A_MIN_KM, max: A_MAX_KM, status: { message: '', level: 'ok' } };
 }
 
 // ─── eccentricity ─────────────────────────────────────────────────────────────
 
 export function limitsE(a: number): ParamLimits {
-  // Hard physics: periapsis must stay above Earth's surface.
-  // e_max = 1 − R_Earth / a
-  const eMax = Math.max(0, 1 - EARTH_R_KM / a);
-
-  // Clamp to 0.99 so the slider stays in the bound-orbit regime by default.
-  // If you want to support hyperbolic orbits, raise this to e.g. 5.
-  const max = Math.min(eMax, 0.99);
-
-  const status: ParamStatus =
-    eMax < 0.01
-      ? {
-          message: 'a is too low to allow any eccentricity — raise a first',
-          level: 'warn',
-        }
-      : { message: '', level: 'ok' };
-
-  return { min: 0, max, status };
+  // e_max = 1 − R_Earth / a  (periapsis must clear Earth's surface)
+  // Capped at 0.99 — hyperbolic orbits not supported yet.
+  const max = Math.min(Math.max(0, 1 - EARTH_R_KM / a), 0.99);
+  // No status: slider clamps the value, so an invalid state is unreachable
+  // with the current a_min = 6500 km (gives eMax ≈ 0.02, always above 0).
+  return { min: 0, max, status: { message: '', level: 'ok' } };
 }
 
 // ─── inclination ─────────────────────────────────────────────────────────────
 
 export function limitsI(): ParamLimits {
+  // Always 0–180°, unconditionally, no cross-param coupling.
   return { min: 0, max: 180, status: { message: '', level: 'ok' } };
 }
 
 // ─── RAAN ────────────────────────────────────────────────────────────────────
 
 export function limitsRaan(i: number): ParamLimits {
+  // Genuinely undefined for equatorial orbits — slider should be greyed out.
   const isEquatorial = i < 0.5 || i > 179.5;
   return {
     min: 0,
@@ -65,6 +51,7 @@ export function limitsRaan(i: number): ParamLimits {
 // ─── argument of periapsis ───────────────────────────────────────────────────
 
 export function limitsOmega(e: number): ParamLimits {
+  // Genuinely undefined for circular orbits — slider should be greyed out.
   const isCircular = e < 0.001;
   return {
     min: 0,
@@ -81,38 +68,19 @@ export function limitsOmega(e: number): ParamLimits {
 
 // ─── true anomaly ────────────────────────────────────────────────────────────
 
-export function limitsNu(e: number): ParamLimits {
-  if (e < 1) {
-    return { min: 0, max: 359.99, status: { message: '', level: 'ok' } };
-  }
-  // Hyperbolic: ν is bounded by the asymptote angle arccos(−1/e).
-  const nuMaxDeg = (Math.acos(-1 / e) * 180) / Math.PI;
-  return {
-    min: -nuMaxDeg,
-    max: nuMaxDeg,
-    status: {
-      message: `Hyperbolic orbit — ν bounded to ±${nuMaxDeg.toFixed(1)}°`,
-      level: 'warn',
-    },
-  };
+export function limitsNu(): ParamLimits {
+  // Full 360° — hyperbolic bounding (arccos(−1/e)) removed because e is
+  // capped at 0.99 and e >= 1 is currently unreachable.
+  // Restore hyperbolic case here if you ever lift the e < 1 cap.
+  return { min: 0, max: 359.99, status: { message: '', level: 'ok' } };
 }
 
 // ─── derived quantities ───────────────────────────────────────────────────────
-
-export interface DerivedOrbital {
-  rPeriapsis: number; // km — always defined
-  rApoapsis: number | null; // km — null for hyperbolic
-  periodMin: number | null; // minutes — null for hyperbolic
-  vPeriapsis: number | null; // km/s
-  vApoapsis: number | null; // km/s — null for hyperbolic
-  orbitType: 'circular' | 'ellipse' | 'hyperbola';
-}
 
 export function deriveOrbital({
   a,
   e,
 }: Pick<OrbitalValues, 'a' | 'e'>): DerivedOrbital {
-  // e === 1 (parabola) is unreachable with floating-point sliders — folded into hyperbola.
   const orbitType = e < 0.001 ? 'circular' : e < 1 ? 'ellipse' : 'hyperbola';
 
   const rP = a * (1 - e);
@@ -142,6 +110,6 @@ export function computeAllLimits(
     i: limitsI(),
     raan: limitsRaan(v.i),
     omega: limitsOmega(v.e),
-    nu: limitsNu(v.e),
+    nu: limitsNu(),
   };
 }

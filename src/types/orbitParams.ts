@@ -57,3 +57,12 @@ export interface ParamLimits {
   max: number;
   status: ParamStatus;
 }
+
+export interface DerivedOrbital {
+  rPeriapsis: number; // km — always defined
+  rApoapsis: number | null; // km — null for hyperbolic
+  periodMin: number | null; // minutes — null for hyperbolic
+  vPeriapsis: number | null; // km/s
+  vApoapsis: number | null; // km/s — null for hyperbolic
+  orbitType: 'circular' | 'ellipse' | 'hyperbola';
+}

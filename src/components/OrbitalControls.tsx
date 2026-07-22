@@ -15,7 +15,6 @@ export function OrbitalControls({
 
   return (
     <div className="flex flex-col gap-6 p-4 max-w-sm">
-      {/* Shape & size */}
       <SliderGroup
         title="Shape & size"
         orbitalValues={values}
@@ -43,7 +42,6 @@ export function OrbitalControls({
         ]}
       />
 
-      {/* Orientation */}
       <SliderGroup
         title="Orientation"
         orbitalValues={values}
@@ -82,7 +80,6 @@ export function OrbitalControls({
         ]}
       />
 
-      {/* Position */}
       <SliderGroup
         title="Position"
         orbitalValues={values}
@@ -93,23 +90,17 @@ export function OrbitalControls({
             label: 'True anomaly  ν',
             unit: '°',
             value: values.nu,
-            min: -180,
-            max: 360,
+            min: 0,
+            max: 359.99,
             step: 0.1,
             decimals: 1,
           },
         ]}
       />
 
-      {/* Derived read-outs (optional) */}
       <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
         {[
-          [
-            'Periapsis',
-            derived.rPeriapsis != null
-              ? `${Math.round(derived.rPeriapsis)} km`
-              : '—',
-          ],
+          ['Periapsis', `${Math.round(derived.rPeriapsis)} km`],
           [
             'Apoapsis',
             derived.rApoapsis != null
