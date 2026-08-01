@@ -4,51 +4,29 @@ import { useMemo, useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
 import type { OrbitalValues } from '@typeProps/orbitParams';
 import { keplerianToCartesian, generateOrbitPath } from '@utils/orbitMath';
-
-// ─── constants ────────────────────────────────────────────────────────────────
-
-const EARTH_RADIUS_KM = 6371;
-const SCALE = 1 / 1000;
-const EARTH_R = EARTH_RADIUS_KM * SCALE;
-const HELPER_R = EARTH_R * 2.2;
-const VIEW_DISTANCE = 25;
-const EARTH_COLOR = '#2255aa';
-const SPACE_BG_COLOR = '#04060f';
-
-// Star colour is fixed for a given EARTH_COLOR — compute once at module level.
-const STAR_COLOR = (() => {
-  const c = new THREE.Color(EARTH_COLOR);
-  const lum = 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
-  return lum < 0.5 ? '#f5f7ff' : '#c7d3e0';
-})();
-
-// Colours matching reference diagram
-const NORTH_COLOR = '#c7ccd6';
-const EQUATOR_COLOR = '#3ddc72';
-const VERNAL_COLOR = '#c7ccd6';
-const NODE_COLOR = '#e040fb';
-const RAAN_COLOR = '#4caf50';
-const INC_COLOR = '#4caf50';
-const OMEGA_COLOR = '#7c4dff';
-const NU_COLOR = '#f44336';
-const PERIAPSIS_COLOR = '#ff9800';
-const APOAPSIS_COLOR = '#42a5f5';
+import { labelStyle } from '@utils/labelStyle';
+import {
+  STAR_COLOR,
+  SCALE,
+  HELPER_R,
+  VIEW_DISTANCE,
+  SPACE_BG_COLOR,
+  NODE_COLOR,
+  RAAN_COLOR,
+  INC_COLOR,
+  OMEGA_COLOR,
+  NU_COLOR,
+  PERIAPSIS_COLOR,
+  APOAPSIS_COLOR,
+} from '@constants/styles';
+import {
+  Earth,
+  EquatorCircle,
+  NorthAxis,
+  VernalEquinoxAxis,
+} from './StaticSceneElements';
 
 type ViewPreset = 'free' | 'vernal' | 'north' | 'orbitalPlane';
-
-// ─── shared helpers ───────────────────────────────────────────────────────────
-
-function labelStyle(color: string): React.CSSProperties {
-  return {
-    color,
-    fontSize: '12px',
-    fontFamily: 'sans-serif',
-    whiteSpace: 'nowrap',
-    textShadow: '0 0 4px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,0.95)',
-    pointerEvents: 'none',
-    userSelect: 'none',
-  };
-}
 
 /** Arc of `segments+1` points in 3-D lying in the plane spanned by unit vectors u, v. */
 function makeArc(
@@ -157,88 +135,6 @@ function CameraRig({
   });
 
   return null;
-}
-
-// ─── static scene elements ────────────────────────────────────────────────────
-
-function Earth() {
-  return (
-    <Sphere args={[EARTH_R, 64, 64]}>
-      <meshPhongMaterial color={EARTH_COLOR} shininess={5} />
-    </Sphere>
-  );
-}
-
-function NorthAxis() {
-  const points = useMemo(
-    () => [
-      new THREE.Vector3(0, -HELPER_R * 0.3, 0),
-      new THREE.Vector3(0, HELPER_R, 0),
-    ],
-    []
-  );
-  return (
-    <group>
-      <Line points={points} color={NORTH_COLOR} lineWidth={1.5} />
-      <Html
-        position={[0, HELPER_R, 0]}
-        center
-        style={{ transform: 'translateY(-12px)' }}
-      >
-        <div style={labelStyle(NORTH_COLOR)}>North</div>
-      </Html>
-    </group>
-  );
-}
-
-function EquatorCircle() {
-  const points = useMemo(
-    () =>
-      Array.from({ length: 129 }, (_, i) => {
-        const t = (i / 128) * Math.PI * 2;
-        const r = HELPER_R * 0.95;
-        return new THREE.Vector3(Math.cos(t) * r, 0, Math.sin(t) * r);
-      }),
-    []
-  );
-  return (
-    <group>
-      <Line
-        points={points}
-        color={EQUATOR_COLOR}
-        lineWidth={1}
-        dashed
-        dashSize={0.3}
-        gapSize={0.2}
-      />
-      <Html
-        position={[-HELPER_R * 0.95, 0, 0]}
-        center
-        style={{ transform: 'translate(10px, 0px)' }}
-      >
-        <div style={labelStyle(EQUATOR_COLOR)}>Equator</div>
-      </Html>
-    </group>
-  );
-}
-
-function VernalEquinoxAxis() {
-  const points = useMemo(
-    () => [new THREE.Vector3(0, 0, 0), new THREE.Vector3(HELPER_R, 0, 0)],
-    []
-  );
-  return (
-    <group>
-      <Line points={points} color={VERNAL_COLOR} lineWidth={1.5} />
-      <Html
-        position={[HELPER_R, 0, 0]}
-        center
-        style={{ transform: 'translate(10px, 0px)' }}
-      >
-        <div style={labelStyle(VERNAL_COLOR)}>♈ Vernal Equinox</div>
-      </Html>
-    </group>
-  );
 }
 
 // ─── orbital annotation elements ─────────────────────────────────────────────
