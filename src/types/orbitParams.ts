@@ -66,3 +66,5 @@ export interface DerivedOrbital {
   vApoapsis: number | null; // km/s — null for hyperbolic
   orbitType: 'circular' | 'ellipse' | 'hyperbola';
 }
+
+export type ViewPreset = 'free' | 'vernal' | 'north' | 'orbitalPlane';

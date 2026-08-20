@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 
 export interface InfoTooltipProps {
-  /** Plain-text or short JSX content shown in the tooltip */
   content: React.ReactNode;
 }
 
@@ -30,7 +29,6 @@ export function InfoTooltip({ content }: InfoTooltipProps) {
           select-none
         "
       >
-        {/* inline SVG so we don't need an icon library */}
         <svg viewBox="0 0 14 14" fill="none" className="w-3.5 h-3.5">
           <circle
             cx="7"
