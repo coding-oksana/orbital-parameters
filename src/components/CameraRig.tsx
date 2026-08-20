@@ -3,6 +3,7 @@ import { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import type { OrbitalValues, ViewPreset } from '@typeProps/orbitParams';
 import { presetPosition } from '@utils/sceneHelpers';
+import { OrbitControls as OrbitalControlsImpl } from 'three-stdlib';
 
 export function CameraRig({
   view,
@@ -13,15 +14,13 @@ export function CameraRig({
   view: ViewPreset;
   values: OrbitalValues;
   animationKey: number;
-  controlsRef: React.RefObject<any>;
+  controlsRef: React.RefObject<OrbitalControlsImpl>;
 }) {
   const { camera } = useThree();
   const targetPos = useRef(presetPosition('free', values));
   const targetUp = useRef(new THREE.Vector3(0, 1, 0));
   const animating = useRef(false);
 
-  // Only re-trigger when the user picks a preset (animationKey or view changes).
-  // values is intentionally excluded — orbital param edits must not move the camera.
   useEffect(() => {
     targetPos.current = presetPosition(view, values);
     targetUp.current =
@@ -29,8 +28,7 @@ export function CameraRig({
         ? new THREE.Vector3(0, 0, -1)
         : new THREE.Vector3(0, 1, 0);
     animating.current = true;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view, animationKey]); // <-- values removed here
+  }, [view, animationKey]);
 
   useFrame(() => {
     if (!animating.current) return;

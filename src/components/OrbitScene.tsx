@@ -1,5 +1,6 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
+import { OrbitControls as OrbitalControlsImpl } from 'three-stdlib';
 import { useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import type { OrbitalValues, ViewPreset } from '@typeProps/orbitParams';
@@ -62,7 +63,7 @@ const LEGEND_ITEMS: [string, string][] = [
 export function OrbitScene({ values }: { values: OrbitalValues }) {
   const [view, setView] = useState<ViewPreset>('free');
   const [animationKey, setAnimationKey] = useState(0);
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<OrbitalControlsImpl>(null);
   const satPosition = useMemo(
     () => keplerianToCartesian(values, SCALE),
     [values]

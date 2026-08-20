@@ -61,7 +61,6 @@ export function InfoTooltip({ content }: InfoTooltipProps) {
           "
         >
           {content}
-          {/* left-pointing arrow */}
           <span
             className="
               absolute right-full top-1/2 -translate-y-1/2
