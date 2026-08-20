@@ -125,10 +125,12 @@ function presetPosition(
 function CameraRig({
   view,
   values,
+  animationKey,
   controlsRef,
 }: {
   view: ViewPreset;
   values: OrbitalValues;
+  animationKey: number;
   controlsRef: React.RefObject<any>;
 }) {
   const { camera } = useThree();
@@ -136,6 +138,8 @@ function CameraRig({
   const targetUp = useRef(new THREE.Vector3(0, 1, 0));
   const animating = useRef(false);
 
+  // Only re-trigger when the user picks a preset (animationKey or view changes).
+  // values is intentionally excluded — orbital param edits must not move the camera.
   useEffect(() => {
     targetPos.current = presetPosition(view, values);
     targetUp.current =
@@ -143,7 +147,8 @@ function CameraRig({
         ? new THREE.Vector3(0, 0, -1)
         : new THREE.Vector3(0, 1, 0);
     animating.current = true;
-  }, [view, values]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [view, animationKey]); // <-- values removed here
 
   useFrame(() => {
     if (!animating.current) return;
@@ -539,15 +544,22 @@ const LEGEND_ITEMS: [string, string][] = [
 
 export function OrbitScene({ values }: { values: OrbitalValues }) {
   const [view, setView] = useState<ViewPreset>('free');
+  const [animationKey, setAnimationKey] = useState(0); // increments on each preset pick
   const controlsRef = useRef<any>(null);
   const satPosition = useMemo(
     () => keplerianToCartesian(values, SCALE),
     [values]
   );
 
+  // When the user picks a preset button, bump animationKey to re-trigger the
+  // fly-to animation. Changing the same preset twice still animates.
+  function handleViewChange(next: ViewPreset) {
+    setView(next);
+    setAnimationKey((k) => k + 1);
+  }
+
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      {/* View preset buttons */}
       <div
         style={{
           position: 'absolute',
@@ -562,7 +574,7 @@ export function OrbitScene({ values }: { values: OrbitalValues }) {
         {VIEW_BUTTONS.map((btn) => (
           <button
             key={btn.value}
-            onClick={() => setView(btn.value)}
+            onClick={() => handleViewChange(btn.value)}
             style={{
               padding: '6px 10px',
               fontSize: 12,
@@ -580,7 +592,6 @@ export function OrbitScene({ values }: { values: OrbitalValues }) {
         ))}
       </div>
 
-      {/* Colour legend */}
       <div
         style={{
           position: 'absolute',
@@ -654,7 +665,13 @@ export function OrbitScene({ values }: { values: OrbitalValues }) {
         <OrbitPath values={values} />
         <Satellite position={satPosition} />
 
-        <CameraRig view={view} values={values} controlsRef={controlsRef} />
+        {/* animationKey passed separately so values changes don't trigger animation */}
+        <CameraRig
+          view={view}
+          values={values}
+          animationKey={animationKey}
+          controlsRef={controlsRef}
+        />
         <OrbitControls ref={controlsRef} enableDamping={false} />
       </Canvas>
     </div>
