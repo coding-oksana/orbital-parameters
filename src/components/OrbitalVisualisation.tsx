@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react';
-
 import { PresetsPanel } from '@components/PresetsPanel';
 import type {
   OrbitalPreset,
@@ -9,6 +8,9 @@ import type {
 import { PRESETS } from '@constants/orbits';
 import { OrbitalControls } from './OrbitalControls';
 import { OrbitScene } from './OrbitScene';
+import { GroundTrackView } from './GroundTrackView';
+
+type SceneTab = '3d' | 'ground';
 
 function elementsToOrbitalValues(elements: KeplerianElements): OrbitalValues {
   return {
@@ -21,20 +23,68 @@ function elementsToOrbitalValues(elements: KeplerianElements): OrbitalValues {
   };
 }
 
-const INITIAL_VALUES: OrbitalValues = elementsToOrbitalValues(
-  PRESETS.find((p) => p.id === 'iss')?.elements ?? {
-    a: 12_000,
-    e: 0.2,
-    i: 28.5,
-    raan: 120,
-    w: 45,
-    nu: 0,
-  }
-);
+const issPreset = PRESETS.find((p) => p.id === 'iss');
+if (!issPreset) throw new Error('ISS preset missing from PRESETS');
+const INITIAL_VALUES = elementsToOrbitalValues(issPreset.elements);
+
+// ─── tab bar ─────────────────────────────────────────────────────────────────
+
+const TAB_ITEMS: { id: SceneTab; label: string; icon: string }[] = [
+  { id: '3d', label: '3D view', icon: '🌐' },
+  { id: 'ground', label: 'Ground track', icon: '🗺️' },
+];
+
+interface TabBarProps {
+  active: SceneTab;
+  onChange: (tab: SceneTab) => void;
+}
+
+function TabBar({ active, onChange }: TabBarProps) {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        zIndex: 20,
+        display: 'flex',
+        gap: 4,
+        background: 'rgba(4,6,15,0.82)',
+        padding: '4px',
+        borderRadius: 8,
+        border: '1px solid #1e2a40',
+      }}
+    >
+      {TAB_ITEMS.map((tab) => (
+        <button
+          key={tab.id}
+          onClick={() => onChange(tab.id)}
+          style={{
+            padding: '5px 12px',
+            fontSize: 12,
+            fontFamily: 'sans-serif',
+            borderRadius: 5,
+            border: 'none',
+            cursor: 'pointer',
+            background: active === tab.id ? '#1e3a5f' : 'transparent',
+            color: active === tab.id ? '#38bdf8' : '#6a7a94',
+            fontWeight: active === tab.id ? 500 : 400,
+            transition: 'all 0.15s',
+          }}
+        >
+          {tab.icon} {tab.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ─── root ─────────────────────────────────────────────────────────────────────
 
 export function OrbitalVisualisation() {
   const [activePresetId, setActivePresetId] = useState<string | null>('iss');
   const [values, setValues] = useState<OrbitalValues>(INITIAL_VALUES);
+  const [tab, setTab] = useState<SceneTab>('3d');
 
   const handlePresetSelect = useCallback((preset: OrbitalPreset) => {
     setValues(elementsToOrbitalValues(preset.elements));
@@ -48,6 +98,7 @@ export function OrbitalVisualisation() {
 
   return (
     <div className="flex flex-row h-screen w-screen overflow-hidden">
+      {/* Sidebar */}
       <div className="w-sm shrink-0 overflow-y-auto">
         <PresetsPanel
           presets={PRESETS}
@@ -56,8 +107,35 @@ export function OrbitalVisualisation() {
         />
         <OrbitalControls values={values} onChange={handleValueChange} />
       </div>
-      <div className="flex-1 h-full">
-        <OrbitScene values={values} />
+
+      {/* Main view */}
+      <div className="flex-1 h-full" style={{ position: 'relative' }}>
+        {/* Tab switcher — floats top-right over whichever view is active */}
+        <TabBar active={tab} onChange={setTab} />
+
+        {/* 3D scene — always mounted so OrbitControls state is preserved */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            visibility: tab === '3d' ? 'visible' : 'hidden',
+            pointerEvents: tab === '3d' ? 'auto' : 'none',
+          }}
+        >
+          <OrbitScene values={values} />
+        </div>
+
+        {/* Ground track — always mounted so canvas doesn't re-init */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            visibility: tab === 'ground' ? 'visible' : 'hidden',
+            pointerEvents: tab === 'ground' ? 'auto' : 'none',
+          }}
+        >
+          <GroundTrackView values={values} />
+        </div>
       </div>
     </div>
   );
