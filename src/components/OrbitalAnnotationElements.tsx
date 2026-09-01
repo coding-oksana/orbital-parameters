@@ -32,6 +32,7 @@ export function AscendingNodeLine({ raanDeg }: { raanDeg: number }) {
     () => dir.clone().multiplyScalar(-HELPER_R * 0.7),
     [dir]
   );
+
   return (
     <group>
       <Line

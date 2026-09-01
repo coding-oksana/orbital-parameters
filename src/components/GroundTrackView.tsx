@@ -1,7 +1,14 @@
+/**
+ * GroundTrackView.tsx
+ *
+ * 2-D equirectangular ground track map rendered on a <canvas>.
+ * Shows: grid lines, continent outlines (simplified SVG path projected),
+ * ground track for N orbits, current sub-satellite position.
+ */
+
 import { useEffect, useRef, useMemo } from 'react';
 import type { OrbitalValues } from '@typeProps/orbitParams';
 import { computeGroundTrack, currentGroundPoint } from '@utils/groundTrack';
-import { MU_KM3_S2 } from '@constants/orbits';
 
 // ─── colours ─────────────────────────────────────────────────────────────────
 
@@ -120,11 +127,6 @@ function lonLatToXY(
   return [x, y];
 }
 
-function periodMinutes(a: number, e: number): number {
-  // e unused here (period depends only on a) — kept in signature for clarity
-  return (2 * Math.PI * Math.sqrt(a ** 3 / MU_KM3_S2)) / 60;
-}
-
 // ─── component ───────────────────────────────────────────────────────────────
 
 interface GroundTrackViewProps {
@@ -147,12 +149,17 @@ export function GroundTrackView({ values }: GroundTrackViewProps) {
   // Assign orbit index to each segment — each full period = one orbit
   const stepsPerOrbit = 240;
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  // Keep latest draw data in a ref so ResizeObserver can redraw without
+  // needing to be inside the orbital-data effect.
+  const drawDataRef = useRef({ segments, current, values });
+  drawDataRef.current = { segments, current, values };
+
+  function drawCanvas(canvas: HTMLCanvasElement) {
+    const { segments, current, values } = drawDataRef.current;
     const dpr = window.devicePixelRatio || 1;
     const W = canvas.clientWidth;
     const H = canvas.clientHeight;
+    if (W === 0 || H === 0) return;
     canvas.width = W * dpr;
     canvas.height = H * dpr;
     const ctx = canvas.getContext('2d')!;
@@ -224,7 +231,6 @@ export function GroundTrackView({ values }: GroundTrackViewProps) {
     ctx.stroke();
 
     // Ground tracks — assign colour by orbit index
-    let segIdx = 0;
     let accumulated = 0;
     segments.forEach((seg) => {
       // Estimate which orbit this segment belongs to by point count
@@ -245,7 +251,6 @@ export function GroundTrackView({ values }: GroundTrackViewProps) {
         else ctx.lineTo(x, y);
       });
       ctx.stroke();
-      segIdx++;
     });
     ctx.globalAlpha = 1;
 
@@ -263,107 +268,115 @@ export function GroundTrackView({ values }: GroundTrackViewProps) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Info box — top left
-    const latStr = `${Math.abs(current.lat).toFixed(1)}° ${current.lat >= 0 ? 'N' : 'S'}`;
-    const lonStr = `${Math.abs(current.lon).toFixed(1)}° ${current.lon >= 0 ? 'E' : 'W'}`;
-    const T = periodMinutes(values.a, values.e);
-    const alt = Math.round(values.a * (1 - values.e) - 6371);
+    // Info box — top left, matching screenshot style
+    const latStr = `Lat ${Math.abs(current.lat).toFixed(1)}° ${current.lat >= 0 ? 'N' : 'S'}`;
+    const lonStr = `Lon ${Math.abs(current.lon).toFixed(1)}° ${current.lon >= 0 ? 'E' : 'W'}`;
+
+    const scale = W / 600;
+    const fSm = 6 * scale; // header font size
+    const fLg = 6 * scale; // value font size
+    const pad = 7 * scale;
+    const lineH = 11 * scale;
+    const boxW = 90 * scale;
+    const boxH = pad + lineH + lineH + lineH + pad * 0.5;
+    const bx = 10,
+      by = 10;
 
     ctx.fillStyle = INFO_BG;
     ctx.beginPath();
-    ctx.roundRect(10, 10, 180, 90, 6);
+    ctx.roundRect(bx, by, boxW, boxH, 5 * scale);
     ctx.fill();
 
-    ctx.font = `bold ${11 * (W / 600)}px system-ui, sans-serif`;
+    // "CURRENT POSITION" — orange, small caps weight
+    ctx.font = `bold ${fSm}px system-ui, sans-serif`;
     ctx.fillStyle = INFO_TEXT;
     ctx.textAlign = 'left';
-    ctx.fillText('CURRENT POSITION', 18, 28);
+    ctx.fillText('CURRENT POSITION', bx + pad, by + pad + fSm);
 
-    ctx.font = `${11 * (W / 600)}px system-ui, sans-serif`;
+    // Lat / Lon values — white, slightly larger
+    ctx.font = `${fLg}px system-ui, sans-serif`;
     ctx.fillStyle = INFO_SUB;
-    ctx.fillText(`Lat  ${latStr}`, 18, 46);
-    ctx.fillText(`Lon  ${lonStr}`, 18, 62);
-    ctx.fillText(`Alt  ${alt} km  ·  T = ${T.toFixed(1)} min`, 18, 78);
-    ctx.fillText(`i = ${values.i.toFixed(1)}°`, 18, 94);
+    ctx.fillText(latStr, bx + pad, by + pad + fSm + lineH);
+    ctx.fillText(lonStr, bx + pad, by + pad + fSm + lineH * 2);
+  }
+
+  // Redraw whenever orbital data changes
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) drawCanvas(canvas);
   }, [segments, current, values]);
 
-  // Legend
-  const orbitLabels = ['Orbit 1 (current)', 'Orbit 2', 'Orbit 3'];
+  // Redraw whenever the canvas is resized (viewport change, panel resize, DPR change)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const observer = new ResizeObserver(() => drawCanvas(canvas));
+    observer.observe(canvas);
+    return () => observer.disconnect();
+  }, []);
+
+  const LEGEND_ITEMS: [string, string][] = [
+    [TRACK_1, 'Orbit 1 (current)'],
+    [TRACK_2, 'Orbit 2'],
+    [TRACK_3, 'Orbit 3'],
+    [SAT_FILL, 'Current position'],
+  ];
 
   return (
     <div
       style={{
         width: '100%',
         height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
+        position: 'relative',
         background: BG,
       }}
     >
-      {/* Legend row */}
+      {/* Floating legend — matches 3D scene style */}
       <div
         style={{
+          position: 'absolute',
+          bottom: 14,
+          left: 14,
+          zIndex: 10,
           display: 'flex',
-          alignItems: 'center',
-          gap: 20,
-          padding: '8px 14px',
-          borderBottom: '1px solid #1a2035',
-          flexShrink: 0,
+          flexDirection: 'column',
+          gap: 4,
+          background: 'rgba(4,6,15,0.75)',
+          padding: '8px 12px',
+          borderRadius: 8,
         }}
       >
-        {orbitLabels.map((lbl, i) => (
+        {LEGEND_ITEMS.map(([color, label]) => (
           <div
-            key={lbl}
-            style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+            key={label}
+            style={{ display: 'flex', alignItems: 'center', gap: 7 }}
           >
             <div
               style={{
-                width: 24,
-                height: 3,
-                background: TRACK_COLORS[i],
-                borderRadius: 2,
-                opacity: i === 0 ? 1 : 0.6,
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                background: color,
+                flexShrink: 0,
               }}
             />
             <span
               style={{
+                color: '#c7ccd6',
                 fontSize: 11,
-                color: '#8a9ab5',
                 fontFamily: 'sans-serif',
               }}
             >
-              {lbl}
+              {label}
             </span>
           </div>
         ))}
-        <div
-          style={{
-            marginLeft: 'auto',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-          }}
-        >
-          <div
-            style={{
-              width: 10,
-              height: 10,
-              borderRadius: '50%',
-              background: SAT_FILL,
-            }}
-          />
-          <span
-            style={{ fontSize: 11, color: '#8a9ab5', fontFamily: 'sans-serif' }}
-          >
-            Current position
-          </span>
-        </div>
       </div>
 
-      {/* Canvas */}
+      {/* Canvas fills the full container */}
       <canvas
         ref={canvasRef}
-        style={{ flex: 1, width: '100%', display: 'block' }}
+        style={{ width: '100%', height: '100%', display: 'block' }}
       />
     </div>
   );
