@@ -14,15 +14,18 @@ export function CameraRig({
   view: ViewPreset;
   values: OrbitalValues;
   animationKey: number;
-  controlsRef: React.RefObject<OrbitalControlsImpl>;
+  controlsRef: React.RefObject<OrbitalControlsImpl | null>;
 }) {
   const { camera } = useThree();
   const targetPos = useRef(presetPosition('free', values));
   const targetUp = useRef(new THREE.Vector3(0, 1, 0));
   const animating = useRef(false);
+  // Latest orbit, read only when the view changes — editing params must not re-zoom
+  const valuesRef = useRef(values);
+  valuesRef.current = values;
 
   useEffect(() => {
-    targetPos.current = presetPosition(view, values);
+    targetPos.current = presetPosition(view, valuesRef.current);
     targetUp.current =
       view === 'north'
         ? new THREE.Vector3(0, 0, -1)

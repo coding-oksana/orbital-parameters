@@ -1,22 +1,5 @@
 import type { ReactNode } from 'react';
-
-interface TooltipLine {
-  formula?: string; // rendered in mono
-  text: string; // plain-English explanation
-}
-
-function TooltipBody({ formula, text }: TooltipLine) {
-  return (
-    <span className="flex flex-col gap-1">
-      {formula && (
-        <span className="font-mono text-sky-300 dark:text-sky-400 text-[11px]">
-          {formula}
-        </span>
-      )}
-      <span>{text}</span>
-    </span>
-  );
-}
+import { TooltipBody } from '@components/TooltipBody';
 
 export const PARAM_TOOLTIPS: Record<string, ReactNode> = {
   a: (

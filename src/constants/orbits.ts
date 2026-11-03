@@ -1,7 +1,8 @@
+import { MU_EARTH } from 'orbital-convert';
 import { OrbitalPreset } from '@typeProps/orbitParams';
 
 export const EARTH_R_KM = 6_371; // mean radius
-export const MU_KM3_S2 = 398_600.4418; // GM Earth (km³/s²)
+export const MU_KM3_S2 = MU_EARTH; // GM Earth (km³/s²)
 export const A_MIN_KM = 6_500; // just above Earth's surface
 export const A_MAX_KM = 400_000; // well beyond the Moon
 

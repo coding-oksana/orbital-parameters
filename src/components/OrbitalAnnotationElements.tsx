@@ -32,6 +32,7 @@ export function AscendingNodeLine({ raanDeg }: { raanDeg: number }) {
     () => dir.clone().multiplyScalar(-HELPER_R * 0.7),
     [dir]
   );
+
   return (
     <group>
       <Line
@@ -65,23 +66,27 @@ export function AscendingNodeLine({ raanDeg }: { raanDeg: number }) {
   );
 }
 
+// Equatorial plane basis: +X = vernal equinox, -Z = eastward
+const EQUINOX_DIR = new THREE.Vector3(1, 0, 0);
+const EAST_DIR = new THREE.Vector3(0, 0, -1);
+const NORTH_DIR = new THREE.Vector3(0, 1, 0);
+
 export function RaanArc({ values }: { values: OrbitalValues }) {
   const raanRad = THREE.MathUtils.degToRad(values.raan);
-  // Equatorial plane basis: +X = vernal equinox, -Z = eastward
-  const u = new THREE.Vector3(1, 0, 0);
-  const v = new THREE.Vector3(0, 0, -1);
+  const u = EQUINOX_DIR;
+  const v = EAST_DIR;
   const r = HELPER_R * 0.55;
 
   const pts = useMemo(
     () => makeArc(new THREE.Vector3(), u, v, r, 0, raanRad),
-    [raanRad]
+    [raanRad, u, v, r]
   );
   const midPos = useMemo(() => {
     const mid = raanRad / 2;
     return new THREE.Vector3()
       .addScaledVector(u, Math.cos(mid) * (r + 0.4))
       .addScaledVector(v, Math.sin(mid) * (r + 0.4));
-  }, [raanRad]);
+  }, [raanRad, u, v, r]);
 
   if (values.raan < 2) return null;
   return (
@@ -99,19 +104,19 @@ export function InclinationArc({ values }: { values: OrbitalValues }) {
   // Arc from equatorial plane up to orbital plane, centred on the ascending node.
   // u = node direction, v = north (+Y)
   const u = useMemo(() => ascNodeDir(values.raan), [values.raan]);
-  const v = new THREE.Vector3(0, 1, 0);
+  const v = NORTH_DIR;
   const r = HELPER_R * 0.45;
 
   const pts = useMemo(
     () => makeArc(new THREE.Vector3(), u, v, r, 0, incRad),
-    [incRad, u]
+    [incRad, u, v, r]
   );
   const midPos = useMemo(() => {
     const mid = incRad / 2;
     return new THREE.Vector3()
       .addScaledVector(u, Math.cos(mid) * (r + 0.35))
       .addScaledVector(v, Math.sin(mid) * (r + 0.35));
-  }, [incRad, u]);
+  }, [incRad, u, v, r]);
 
   if (values.i < 1) return null;
   return (
@@ -135,14 +140,14 @@ export function OmegaArc({ values }: { values: OrbitalValues }) {
 
   const pts = useMemo(
     () => makeArc(new THREE.Vector3(), u, v, r, 0, omegaRad),
-    [omegaRad, u, v]
+    [omegaRad, u, v, r]
   );
   const midPos = useMemo(() => {
     const mid = omegaRad / 2;
     return new THREE.Vector3()
       .addScaledVector(u, Math.cos(mid) * (r + 0.4))
       .addScaledVector(v, Math.sin(mid) * (r + 0.4));
-  }, [omegaRad, u, v]);
+  }, [omegaRad, u, v, r]);
 
   if (values.omega < 2) return null;
   return (
@@ -168,14 +173,14 @@ export function NuArc({ values }: { values: OrbitalValues }) {
 
   const pts = useMemo(
     () => makeArc(new THREE.Vector3(), u, v, r, 0, nuRad),
-    [nuRad, u, v]
+    [nuRad, u, v, r]
   );
   const midPos = useMemo(() => {
     const mid = nuRad / 2;
     return new THREE.Vector3()
       .addScaledVector(u, Math.cos(mid) * (r + 0.45))
       .addScaledVector(v, Math.sin(mid) * (r + 0.45));
-  }, [nuRad, u, v]);
+  }, [nuRad, u, v, r]);
 
   if (values.nu < 2) return null;
   return (

@@ -1,4 +1,5 @@
-const MU_KM3_S2 = 398_600.4418;
+import { MU_EARTH, keplerianToCartesian } from 'orbital-convert';
+
 const EARTH_ROT_DEG_PER_SEC = 360 / 86_164.1; // sidereal rotation rate
 
 export interface GroundPoint {
@@ -50,14 +51,10 @@ export function computeGroundTrack(
   numOrbits = 3,
   stepsPerOrbit = 180
 ): GroundSegment[] {
-  const { a, e, i, raan, omega, nu } = orbit;
-
-  const iRad = (i * Math.PI) / 180;
-  const raanRad = (raan * Math.PI) / 180;
-  const omegaRad = (omega * Math.PI) / 180;
+  const { a, e, nu } = orbit;
 
   // Orbital period (seconds)
-  const T = 2 * Math.PI * Math.sqrt(a ** 3 / MU_KM3_S2);
+  const T = 2 * Math.PI * Math.sqrt(a ** 3 / MU_EARTH);
 
   // Initial true anomaly → mean anomaly (for stepping)
   const nu0Rad = (nu * Math.PI) / 180;
@@ -84,33 +81,14 @@ export function computeGroundTrack(
     const E = solveKepler(M, e);
     const nuRad = trueFromEccentric(E, e);
 
-    // Position in orbital plane (perifocal frame)
-    const r = a * (1 - e * Math.cos(E));
-    const xPeri = r * Math.cos(nuRad);
-    const yPeri = r * Math.sin(nuRad);
-
-    // Rotate perifocal → ECI (Earth-Centred Inertial)
-    // Full rotation: Rz(−Ω) · Rx(−i) · Rz(−ω)
-    const cosO = Math.cos(omegaRad),
-      sinO = Math.sin(omegaRad);
-    const cosI = Math.cos(iRad),
-      sinI = Math.sin(iRad);
-    const cosR = Math.cos(raanRad),
-      sinR = Math.sin(raanRad);
-
-    const xECI =
-      (cosR * cosO - sinR * sinO * cosI) * xPeri +
-      (-cosR * sinO - sinR * cosO * cosI) * yPeri;
-    const yECI =
-      (sinR * cosO + cosR * sinO * cosI) * xPeri +
-      (-sinR * sinO + cosR * cosO * cosI) * yPeri;
-    const zECI = sinI * sinO * xPeri + sinI * cosO * yPeri;
+    // Position in ECI (Earth-Centred Inertial)
+    const eci = keplerianToCartesian({ ...orbit, nu: (nuRad * 180) / Math.PI });
 
     // Latitude (inertial = geographic for this simplified model)
-    const lat = (Math.asin(zECI / r) * 180) / Math.PI;
+    const lat = (Math.asin(eci.z / eci.r) * 180) / Math.PI;
 
     // Longitude: ECI longitude − Earth's rotation since t=0
-    const lonECI = (Math.atan2(yECI, xECI) * 180) / Math.PI;
+    const lonECI = (Math.atan2(eci.y, eci.x) * 180) / Math.PI;
     let lon = lonECI - EARTH_ROT_DEG_PER_SEC * t;
 
     // Normalise to −180…+180

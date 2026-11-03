@@ -10,7 +10,6 @@ export default defineConfig({
       '@typeProps': path.resolve(__dirname, './src/types'),
       '@pages': path.resolve(__dirname, './src/pages'),
       '@utils': path.resolve(__dirname, './src/utils'),
-      '@atoms': path.resolve(__dirname, './src/atoms'),
       '@constants': path.resolve(__dirname, './src/constants'),
     },
   },

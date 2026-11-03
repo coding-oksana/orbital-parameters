@@ -2,12 +2,10 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
 import { OrbitControls as OrbitalControlsImpl } from 'three-stdlib';
 import { useMemo, useRef, useState } from 'react';
-import * as THREE from 'three';
 import type { OrbitalValues, ViewPreset } from '@typeProps/orbitParams';
 import { keplerianToCartesian } from '@utils/orbitMath';
 import {
   SCALE,
-  EARTH_COLOR,
   SPACE_BG_COLOR,
   INC_COLOR,
   NU_COLOR,
@@ -36,12 +34,6 @@ import {
   RaanArc,
   Satellite,
 } from './OrbitalAnnotationElements';
-
-const STAR_COLOR = (() => {
-  const c = new THREE.Color(EARTH_COLOR);
-  const lum = 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
-  return lum < 0.5 ? '#f5f7ff' : '#c7d3e0';
-})();
 
 const VIEW_BUTTONS: { label: string; value: ViewPreset }[] = [
   { label: 'Free', value: 'free' },
@@ -161,7 +153,6 @@ export function OrbitScene({ values }: { values: OrbitalValues }) {
           saturation={0}
           fade
           speed={0.5}
-          color={STAR_COLOR}
         />
 
         <Earth />
