@@ -39,6 +39,8 @@ export default tseslint.config({ ignores: ['dist'] }, {
             'warn',
             { allowConstantExport: true },
         ],
+        // react-three-fiber JSX props (args, intensity, …) are typed by TS
+        'react/no-unknown-property': 'off',
         'prettier/prettier': 'error',
     },
 });

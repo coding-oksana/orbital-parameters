@@ -151,11 +151,11 @@ export function GroundTrackView({ values }: GroundTrackViewProps) {
 
   // Keep latest draw data in a ref so ResizeObserver can redraw without
   // needing to be inside the orbital-data effect.
-  const drawDataRef = useRef({ segments, current, values });
-  drawDataRef.current = { segments, current, values };
+  const drawDataRef = useRef({ segments, current });
+  drawDataRef.current = { segments, current };
 
   function drawCanvas(canvas: HTMLCanvasElement) {
-    const { segments, current, values } = drawDataRef.current;
+    const { segments, current } = drawDataRef.current;
     const dpr = window.devicePixelRatio || 1;
     const W = canvas.clientWidth;
     const H = canvas.clientHeight;
@@ -304,7 +304,7 @@ export function GroundTrackView({ values }: GroundTrackViewProps) {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) drawCanvas(canvas);
-  }, [segments, current, values]);
+  }, [segments, current]);
 
   // Redraw whenever the canvas is resized (viewport change, panel resize, DPR change)
   useEffect(() => {
