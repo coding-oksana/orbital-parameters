@@ -60,3 +60,7 @@ This is an educational tool, not a precise propagator:
 - Orbits are pure two-body Keplerian. There is no J2, drag or other perturbation, so RAAN does not drift and the sun-synchronous preset will not actually stay sun-synchronous.
 - The ground track assumes Earth's rotation angle is 0 at t = 0, so longitudes are relative, not tied to a real date and time.
 - Eccentricity is limited to closed orbits (`e ≤ 0.99`).
+
+## License
+
+[MIT](LICENSE) © 2026 Oksana Popovichenko
