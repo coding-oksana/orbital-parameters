@@ -2,6 +2,8 @@
 
 An interactive visualiser for the six Keplerian orbital elements. Move a slider and watch the orbit change around Earth in 3D, or switch to the 2D ground track to see where the satellite passes over the surface.
 
+![3D view of the ISS orbit with labelled orbital elements](public/og-image.png)
+
 ## Features
 
 - **Six element sliders**, grouped into shape & size (`a`, `e`), orientation (`i`, `Ω`, `ω`) and position (`ν`). Each slider has a tooltip explaining what the element does.

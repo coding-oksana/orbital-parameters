@@ -99,17 +99,20 @@ export function OrbitalVisualisation() {
   return (
     <div className="flex flex-row h-screen w-screen overflow-hidden">
       {/* Sidebar */}
-      <div className="w-sm shrink-0 overflow-y-auto">
+      <aside className="w-sm shrink-0 overflow-y-auto">
+        <h1 className="sr-only">
+          Orbital Parameters – Interactive Keplerian Orbit Visualiser
+        </h1>
         <PresetsPanel
           presets={PRESETS}
           activePresetId={activePresetId}
           onSelect={handlePresetSelect}
         />
         <OrbitalControls values={values} onChange={handleValueChange} />
-      </div>
+      </aside>
 
       {/* Main view */}
-      <div className="flex-1 h-full" style={{ position: 'relative' }}>
+      <main className="flex-1 h-full" style={{ position: 'relative' }}>
         {/* Tab switcher — floats top-right over whichever view is active */}
         <TabBar active={tab} onChange={setTab} />
 
@@ -136,7 +139,7 @@ export function OrbitalVisualisation() {
         >
           <GroundTrackView values={values} />
         </div>
-      </div>
+      </main>
     </div>
   );
 }

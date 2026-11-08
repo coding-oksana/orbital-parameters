@@ -2,12 +2,96 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Orbital parameters</title>
+
+    <title>Orbital Parameters – Interactive Keplerian Orbit Visualiser</title>
+    <meta
+      name="description"
+      content="Explore the six Keplerian orbital elements interactively. Adjust semi-major axis, eccentricity, inclination, RAAN, argument of periapsis and true anomaly, and see the orbit in 3D and as a ground track."
+    />
+    <meta name="author" content="Oksana Popovichenko" />
+    <meta name="theme-color" content="#04060f" />
+    <link
+      rel="canonical"
+      href="https://coding-oksana.github.io/orbital-parameters/"
+    />
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+
+    <!-- Open Graph (Facebook, LinkedIn, Slack, Discord, …) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Orbital Parameters" />
+    <meta
+      property="og:title"
+      content="Orbital Parameters – Interactive Keplerian Orbit Visualiser"
+    />
+    <meta
+      property="og:description"
+      content="Adjust the six Keplerian elements and watch the orbit change in 3D and on a ground-track map."
+    />
+    <meta
+      property="og:url"
+      content="https://coding-oksana.github.io/orbital-parameters/"
+    />
+    <meta
+      property="og:image"
+      content="https://coding-oksana.github.io/orbital-parameters/og-image.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="3D view of an orbit around Earth with labelled orbital elements"
+    />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Orbital Parameters – Interactive Keplerian Orbit Visualiser"
+    />
+    <meta
+      name="twitter:description"
+      content="Adjust the six Keplerian elements and watch the orbit change in 3D and on a ground-track map."
+    />
+    <meta
+      name="twitter:image"
+      content="https://coding-oksana.github.io/orbital-parameters/og-image.png"
+    />
+
+    <!-- Structured data for search engines -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Orbital Parameters",
+        "url": "https://coding-oksana.github.io/orbital-parameters/",
+        "description": "Interactive visualiser for the six Keplerian orbital elements, with a 3D orbit view and a 2D ground track.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript and WebGL",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "author": { "@type": "Person", "name": "Oksana Popovichenko" },
+        "license": "https://opensource.org/licenses/MIT"
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <!-- Crawlers and users without JS still get meaningful content -->
+    <noscript>
+      <h1>Orbital Parameters – Interactive Keplerian Orbit Visualiser</h1>
+      <p>
+        An interactive tool for exploring the six Keplerian orbital elements:
+        semi-major axis, eccentricity, inclination, right ascension of the
+        ascending node (RAAN), argument of periapsis and true anomaly. It shows
+        the orbit around Earth in 3D and as a 2D ground track, with presets for
+        the ISS, Hubble, GPS, Molniya, geostationary and sun-synchronous orbits.
+      </p>
+      <p>Please enable JavaScript to use the visualiser.</p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

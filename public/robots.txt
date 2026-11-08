@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://coding-oksana.github.io/orbital-parameters/sitemap.xml
