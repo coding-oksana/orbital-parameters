@@ -9,6 +9,7 @@ import { PRESETS } from '@constants/orbits';
 import { OrbitalControls } from './OrbitalControls';
 import { OrbitScene } from './OrbitScene';
 import { GroundTrackView } from './GroundTrackView';
+import { useIsMobile } from '@utils/useMediaQuery';
 
 type SceneTab = '3d' | 'ground';
 
@@ -40,6 +41,7 @@ interface TabBarProps {
 }
 
 function TabBar({ active, onChange }: TabBarProps) {
+  const isMobile = useIsMobile();
   return (
     <div
       style={{
@@ -59,6 +61,8 @@ function TabBar({ active, onChange }: TabBarProps) {
         <button
           key={tab.id}
           onClick={() => onChange(tab.id)}
+          aria-label={tab.label}
+          aria-pressed={active === tab.id}
           style={{
             padding: '5px 12px',
             fontSize: 12,
@@ -72,7 +76,8 @@ function TabBar({ active, onChange }: TabBarProps) {
             transition: 'all 0.15s',
           }}
         >
-          {tab.icon} {tab.label}
+          {tab.icon}
+          {!isMobile && ` ${tab.label}`}
         </button>
       ))}
     </div>
@@ -97,9 +102,9 @@ export function OrbitalVisualisation() {
   }, []);
 
   return (
-    <div className="flex flex-row h-screen w-screen overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-sm shrink-0 overflow-y-auto">
+    <div className="flex flex-col md:flex-row h-dvh w-screen overflow-hidden">
+      {/* Sidebar — below the view on phones */}
+      <aside className="order-last md:order-none flex-1 min-h-0 w-full md:flex-none md:w-sm md:shrink-0 overflow-y-auto">
         <h1 className="sr-only">
           Orbital Parameters – Interactive Keplerian Orbit Visualiser
         </h1>
@@ -112,7 +117,10 @@ export function OrbitalVisualisation() {
       </aside>
 
       {/* Main view */}
-      <main className="flex-1 h-full" style={{ position: 'relative' }}>
+      <main
+        className="shrink-0 h-[55dvh] md:h-full md:flex-1 md:shrink"
+        style={{ position: 'relative' }}
+      >
         {/* Tab switcher — floats top-right over whichever view is active */}
         <TabBar active={tab} onChange={setTab} />
 

@@ -14,7 +14,7 @@ export function OrbitalControls({
   const derived = deriveOrbital(values);
 
   return (
-    <div className="flex flex-col gap-6 p-4 max-w-sm">
+    <div className="flex flex-col gap-6 p-4 md:max-w-sm">
       <SliderGroup
         title="Shape & size"
         orbitalValues={values}

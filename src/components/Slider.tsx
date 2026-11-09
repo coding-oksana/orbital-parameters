@@ -147,7 +147,7 @@ export function KeplerianSlider({
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="relative flex-1 h-4 flex items-center">
+        <div className="relative flex-1 h-6 md:h-4 flex items-center">
           <div className="absolute inset-x-0 h-[3px] rounded-full bg-slate-300 dark:bg-slate-600" />
 
           {computedMax !== undefined && computedMax < max && (
@@ -186,17 +186,22 @@ export function KeplerianSlider({
             disabled={isDisabled}
             onChange={handleSliderChange}
             className={`
-              relative w-full h-4 appearance-none bg-transparent cursor-pointer
+              relative w-full h-6 md:h-4 appearance-none bg-transparent cursor-pointer
+              touch-pan-y
               disabled:cursor-not-allowed
               focus:outline-none
               [&::-webkit-slider-thumb]:appearance-none
-              [&::-webkit-slider-thumb]:w-3.5
-              [&::-webkit-slider-thumb]:h-3.5
+              [&::-webkit-slider-thumb]:w-5
+              [&::-webkit-slider-thumb]:h-5
+              md:[&::-webkit-slider-thumb]:w-3.5
+              md:[&::-webkit-slider-thumb]:h-3.5
               [&::-webkit-slider-thumb]:rounded-full
               [&::-webkit-slider-thumb]:transition-shadow
               [&::-webkit-slider-thumb]:duration-150
-              [&::-moz-range-thumb]:w-3.5
-              [&::-moz-range-thumb]:h-3.5
+              [&::-moz-range-thumb]:w-5
+              [&::-moz-range-thumb]:h-5
+              md:[&::-moz-range-thumb]:w-3.5
+              md:[&::-moz-range-thumb]:h-3.5
               [&::-moz-range-thumb]:rounded-full
               [&::-moz-range-thumb]:border-0
               ${

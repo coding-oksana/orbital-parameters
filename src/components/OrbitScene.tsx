@@ -22,6 +22,9 @@ import {
   VernalEquinoxAxis,
 } from './StaticSceneElements';
 import { CameraRig } from './CameraRig';
+import { ResponsiveFov } from './ResponsiveFov';
+import { SceneLegend } from './SceneLegend';
+import { useIsMobile } from '@utils/useMediaQuery';
 import {
   ApoapsisMarker,
   AscendingNodeLine,
@@ -35,12 +38,14 @@ import {
   Satellite,
 } from './OrbitalAnnotationElements';
 
-const VIEW_BUTTONS: { label: string; value: ViewPreset }[] = [
-  { label: 'Free', value: 'free' },
-  { label: 'From Vernal Eq.', value: 'vernal' },
-  { label: 'From North', value: 'north' },
-  { label: 'Orbital Plane', value: 'orbitalPlane' },
+const VIEW_BUTTONS: { label: string; short: string; value: ViewPreset }[] = [
+  { label: 'Free', short: 'Free', value: 'free' },
+  { label: 'From Vernal Eq.', short: 'Equinox', value: 'vernal' },
+  { label: 'From North', short: 'North', value: 'north' },
+  { label: 'Orbital Plane', short: 'Plane', value: 'orbitalPlane' },
 ];
+
+const CAMERA_FOV = 50;
 
 const LEGEND_ITEMS: [string, string][] = [
   [RAAN_COLOR, 'Ω  RAAN'],
@@ -56,6 +61,7 @@ export function OrbitScene({ values }: { values: OrbitalValues }) {
   const [view, setView] = useState<ViewPreset>('free');
   const [animationKey, setAnimationKey] = useState(0);
   const controlsRef = useRef<OrbitalControlsImpl>(null);
+  const isMobile = useIsMobile();
   const satPosition = useMemo(
     () => keplerianToCartesian(values, SCALE),
     [values]
@@ -77,6 +83,8 @@ export function OrbitScene({ values }: { values: OrbitalValues }) {
           display: 'flex',
           gap: 6,
           flexWrap: 'wrap',
+          // leave room for the 3D / Ground track tab bar on the right
+          maxWidth: 'calc(100% - 120px)',
         }}
       >
         {VIEW_BUTTONS.map((btn) => (
@@ -95,53 +103,15 @@ export function OrbitScene({ values }: { values: OrbitalValues }) {
               cursor: 'pointer',
             }}
           >
-            {btn.label}
+            {isMobile ? btn.short : btn.label}
           </button>
         ))}
       </div>
 
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 14,
-          left: 14,
-          zIndex: 10,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 4,
-          background: 'rgba(4,6,15,0.75)',
-          padding: '8px 12px',
-          borderRadius: 8,
-        }}
-      >
-        {LEGEND_ITEMS.map(([color, label]) => (
-          <div
-            key={label}
-            style={{ display: 'flex', alignItems: 'center', gap: 7 }}
-          >
-            <div
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: '50%',
-                background: color,
-                flexShrink: 0,
-              }}
-            />
-            <span
-              style={{
-                color: '#c7ccd6',
-                fontSize: 11,
-                fontFamily: 'sans-serif',
-              }}
-            >
-              {label}
-            </span>
-          </div>
-        ))}
-      </div>
+      <SceneLegend items={LEGEND_ITEMS} />
 
-      <Canvas camera={{ position: [15, 10, 15], fov: 50 }}>
+      <Canvas camera={{ position: [15, 10, 15], fov: CAMERA_FOV }}>
+        <ResponsiveFov fov={CAMERA_FOV} />
         <color attach="background" args={[SPACE_BG_COLOR]} />
         <ambientLight intensity={0.5} />
         <directionalLight position={[50, 20, 30]} intensity={1.2} />

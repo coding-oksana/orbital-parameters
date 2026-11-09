@@ -7,6 +7,7 @@
  */
 
 import { useEffect, useRef, useMemo } from 'react';
+import { SceneLegend } from './SceneLegend';
 import type { OrbitalValues } from '@typeProps/orbitParams';
 import { computeGroundTrack, currentGroundPoint } from '@utils/groundTrack';
 
@@ -157,17 +158,22 @@ export function GroundTrackView({ values }: GroundTrackViewProps) {
   function drawCanvas(canvas: HTMLCanvasElement) {
     const { segments, current } = drawDataRef.current;
     const dpr = window.devicePixelRatio || 1;
-    const W = canvas.clientWidth;
-    const H = canvas.clientHeight;
-    if (W === 0 || H === 0) return;
-    canvas.width = W * dpr;
-    canvas.height = H * dpr;
+    const cssW = canvas.clientWidth;
+    const cssH = canvas.clientHeight;
+    if (cssW === 0 || cssH === 0) return;
+    canvas.width = cssW * dpr;
+    canvas.height = cssH * dpr;
     const ctx = canvas.getContext('2d')!;
     ctx.scale(dpr, dpr);
 
     // Background
     ctx.fillStyle = BG;
-    ctx.fillRect(0, 0, W, H);
+    ctx.fillRect(0, 0, cssW, cssH);
+
+    // Equirectangular map is 2:1 — letterbox it instead of stretching
+    const W = Math.min(cssW, cssH * 2);
+    const H = W / 2;
+    ctx.translate((cssW - W) / 2, (cssH - H) / 2);
 
     // Grid lines
     ctx.strokeStyle = GRID;
@@ -191,7 +197,7 @@ export function GroundTrackView({ values }: GroundTrackViewProps) {
 
     // Grid labels
     ctx.fillStyle = GRID_LABEL;
-    ctx.font = `${10 * (W / 600)}px system-ui, sans-serif`;
+    ctx.font = `${10 * Math.max(W / 600, 0.9)}px system-ui, sans-serif`;
     ctx.textAlign = 'center';
     for (let lon = -150; lon <= 150; lon += 30) {
       const [x, y] = lonLatToXY(lon, 0, W, H);
@@ -272,7 +278,8 @@ export function GroundTrackView({ values }: GroundTrackViewProps) {
     const latStr = `Lat ${Math.abs(current.lat).toFixed(1)}° ${current.lat >= 0 ? 'N' : 'S'}`;
     const lonStr = `Lon ${Math.abs(current.lon).toFixed(1)}° ${current.lon >= 0 ? 'E' : 'W'}`;
 
-    const scale = W / 600;
+    // Floor keeps the box readable on narrow (phone) maps
+    const scale = Math.max(W / 600, 1.5);
     const fSm = 6 * scale; // header font size
     const fLg = 6 * scale; // value font size
     const pad = 7 * scale;
@@ -331,47 +338,7 @@ export function GroundTrackView({ values }: GroundTrackViewProps) {
         background: BG,
       }}
     >
-      {/* Floating legend — matches 3D scene style */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 14,
-          left: 14,
-          zIndex: 10,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 4,
-          background: 'rgba(4,6,15,0.75)',
-          padding: '8px 12px',
-          borderRadius: 8,
-        }}
-      >
-        {LEGEND_ITEMS.map(([color, label]) => (
-          <div
-            key={label}
-            style={{ display: 'flex', alignItems: 'center', gap: 7 }}
-          >
-            <div
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: '50%',
-                background: color,
-                flexShrink: 0,
-              }}
-            />
-            <span
-              style={{
-                color: '#c7ccd6',
-                fontSize: 11,
-                fontFamily: 'sans-serif',
-              }}
-            >
-              {label}
-            </span>
-          </div>
-        ))}
-      </div>
+      <SceneLegend items={LEGEND_ITEMS} />
 
       {/* Canvas fills the full container */}
       <canvas

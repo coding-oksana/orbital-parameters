@@ -19,6 +19,7 @@ export function InfoTooltip({ content }: InfoTooltipProps) {
         onMouseLeave={() => setOpen(false)}
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
+        onClick={() => setOpen((o) => !o)}
         className="
           flex items-center justify-center
           w-3.5 h-3.5 rounded-full
@@ -51,7 +52,8 @@ export function InfoTooltip({ content }: InfoTooltipProps) {
         <div
           role="tooltip"
           className="
-            absolute z-50 left-full top-1/2 -translate-y-1/2 ml-2
+            absolute z-50 left-0 top-full mt-2
+            md:left-full md:top-1/2 md:-translate-y-1/2 md:ml-2 md:mt-0
             w-56 px-3 py-2.5
             bg-slate-900 dark:bg-slate-800
             text-slate-100 dark:text-slate-200
@@ -63,6 +65,7 @@ export function InfoTooltip({ content }: InfoTooltipProps) {
           {content}
           <span
             className="
+              hidden md:block
               absolute right-full top-1/2 -translate-y-1/2
               border-4 border-transparent border-r-slate-900 dark:border-r-slate-800
             "
