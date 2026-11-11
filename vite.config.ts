@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react-swc';
 import * as path from 'path';
 
 export default defineConfig({
+  // Served from https://coding-oksana.github.io/orbital-parameters/
+  base: '/orbital-parameters/',
   plugins: [react()],
   resolve: {
     alias: {
