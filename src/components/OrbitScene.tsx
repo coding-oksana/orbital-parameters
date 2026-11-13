@@ -110,6 +110,28 @@ export function OrbitScene({ values }: { values: OrbitalValues }) {
 
       <SceneLegend items={LEGEND_ITEMS} />
 
+      {/* Reference frame caption — bottom-right is the only free corner */}
+      <div
+        title="Earth-centred inertial frame: inclination is measured from the equator, RAAN from the vernal equinox ♈"
+        style={{
+          position: 'absolute',
+          bottom: 14,
+          right: 14,
+          zIndex: 10,
+          background: 'rgba(4,6,15,0.75)',
+          padding: '6px 10px',
+          borderRadius: 8,
+          color: '#6a7a94',
+          fontSize: 11,
+          fontFamily: 'sans-serif',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {isMobile
+          ? 'Ref: equator · ♈\uFE0E (ECI)'
+          : 'Reference: Earth equator · ♈\uFE0E vernal equinox (ECI)'}
+      </div>
+
       <Canvas camera={{ position: [15, 10, 15], fov: CAMERA_FOV }}>
         <ResponsiveFov fov={CAMERA_FOV} />
         <color attach="background" args={[SPACE_BG_COLOR]} />
